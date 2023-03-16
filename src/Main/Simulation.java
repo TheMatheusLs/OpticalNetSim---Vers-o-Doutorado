@@ -4,7 +4,8 @@ import java.util.Random;
 
 import Config.ParametersSimulation;
 import Manager.FolderManager;
-import Network.Topology;
+import Network.TopologyManager;
+import Routing.RoutesManager;
 import Types.GeneralTypes.RandomGenerationType;
 
 /**
@@ -15,12 +16,13 @@ import Types.GeneralTypes.RandomGenerationType;
 public class Simulation {
     
     private FolderManager folderManager;
+    private RoutesManager routesManager;
     private int[] seedsForLoad;
     private long currentRandomSeed;
 
     private Random randomGeneration;
 
-    private Topology topology;
+    private TopologyManager topology;
 
     public Simulation(FolderManager folderManager) {
         this.folderManager = folderManager;
@@ -32,8 +34,13 @@ public class Simulation {
     public void inicialize() {
 
         // Cria uma nova instância da topologia
-        this.topology = new Topology();
-        
+        this.topology = new TopologyManager();
+        this.topology.save(this.folderManager);
+
+        // Cria uma nova instância de routing
+        this.routesManager = new RoutesManager(this.topology);
+        this.routesManager.save(folderManager);
+
     }
 
     private int[] generateRandomSeeds() {

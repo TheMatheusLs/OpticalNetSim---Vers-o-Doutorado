@@ -1,6 +1,7 @@
 package Network;
 
 import Config.ParametersSimulation;
+import Manager.FolderManager;
 import Network.Structure.OpticalLink;
 import Network.Structure.OpticalSwitch;
 import Network.Topologies.TopologyGeneral;
@@ -8,14 +9,14 @@ import Network.Topologies.TopologyNSFNet;
 import Types.GeneralTypes.LinkCostType;
 import Types.GeneralTypes.TopologyType;
 
-public class Topology {
+public class TopologyManager {
     private OpticalSwitch[] listOfNodes;
     private OpticalLink[][] networkOpticalLinks;
     private int numberOfNodes;
     private double maxLinkLength;
     private double[][] linksLengths;
 
-    public Topology() {
+    public TopologyManager() {
   
         this.inicialize();
 
@@ -146,5 +147,22 @@ public class Topology {
         }
 
         return txt;
+    }
+
+    public void save(FolderManager folderManager) {
+        folderManager.writeTopology((String.valueOf(this)));
+    }
+
+    public int getNumberOfNodes() {
+        return numberOfNodes;
+    }
+
+    public OpticalLink getLink(int indexOrNode, int indexDeNode) {
+        return this.networkOpticalLinks[indexOrNode][indexDeNode];
+    }
+
+    public OpticalSwitch getNode(int index) {
+
+        return this.listOfNodes[index];
     }
 }
