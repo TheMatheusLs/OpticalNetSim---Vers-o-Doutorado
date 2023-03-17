@@ -19,7 +19,8 @@ public class Runner {
 
         // Cria a simulação
         Simulation simulation = new Simulation(folderManager);
-
+        
+        simulation.runMultiLoad();
 
         // Calcula o tempo final da simulação
         final long geralEndTime = System.currentTimeMillis();
@@ -27,6 +28,7 @@ public class Runner {
         // Calcula o tempo total da simulação
         final long geralTotalTime = geralEndTime - geralInitTime;
 
+        folderManager.writeDone(geralTotalTime);
         System.out.println("Simulação finalizada com o tempo de " + geralTotalTime + " ms!");
     }
 }

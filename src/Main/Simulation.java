@@ -2,10 +2,16 @@ package Main;
 
 import java.util.Random;
 
+import CallRequests.CallRequest;
+import CallRequests.CallRequestManager;
+import Config.ConfigSimulator;
 import Config.ParametersSimulation;
+import GeneralClasses.ProbabilityFunctions;
 import Manager.FolderManager;
+import Manager.SimulationResults;
 import Network.TopologyManager;
 import Routing.RoutesManager;
+import Types.GeneralTypes.CallRequestType;
 import Types.GeneralTypes.RandomGenerationType;
 
 /**
@@ -81,6 +87,98 @@ public class Simulation {
         }
 
         return auxSeeds;
+    }
+
+    public void runMultiLoad() {
+
+        final int numberOfLoadNetworkPoints = ParametersSimulation.getNumberOfPointSloadNetwork();
+        final double maxLoadNetwork = ParametersSimulation.getMaxLoadNetwork();
+        double step = 0; 
+        
+        if (numberOfLoadNetworkPoints >= 2){
+            step = (maxLoadNetwork - ParametersSimulation.getMinLoadNetwork()) / (numberOfLoadNetworkPoints - 1);
+        }
+
+        // Loop para cada ponto de simulação da rede
+        for (int loadPoint = 0; loadPoint < numberOfLoadNetworkPoints; loadPoint++) {
+
+            // Calcula o carga atual para a simulação da rede
+            double networkLoad = (maxLoadNetwork - (step * loadPoint)) / ConfigSimulator.getMeanRateOfCallsDuration();
+
+            System.out.println("Simulando carga de " + networkLoad + " Erlangs");
+
+            // Loop para múltiplos pontos em uma mesma carga da rede. Retira a média entre diferentes seeds
+            for (int nSim = 1; nSim <= ParametersSimulation.getNumberOfSimulationsPerLoadNetwork(); nSim++){
+            
+                this.currentRandomSeed = seedsForLoad[nSim-1];
+
+                this.randomGeneration = new Random(this.currentRandomSeed);
+
+                System.out.println("Simulação nº: " + nSim + " com seed = " + this.currentRandomSeed);
+
+                SimulationResults simulationResults = new SimulationResults(networkLoad, nSim, this.currentRandomSeed);
+
+                // Executa uma simulação e retorna a classe de resultados
+                simulationResults = this.runSingleLoad(networkLoad, simulationResults);
+
+                // Escreve na tela os resultados
+                System.out.println(simulationResults);
+
+                // Salva os resultados
+                this.folderManager.writeResults(simulationResults.toString());
+            }
+        }
+    }
+
+    private SimulationResults runSingleLoad(double networkLoad, SimulationResults simulationResults) {
+        final long geralInitTime = System.currentTimeMillis();
+
+        final double meanRateCallDur = ConfigSimulator.getMeanRateOfCallsDuration();
+        final long numberMaxOfRequisitions = ParametersSimulation.getMaxNumberOfRequisitions();
+        final CallRequestType callRequestType = ParametersSimulation.getCallRequestType();
+        final int[] possibleBitRates = ParametersSimulation.getTrafficOption();
+
+        int source, destination;
+        double timeSim = 0.0;
+        boolean hasSlots, hasQoT;
+
+        final CallRequestManager listOfCalls = new CallRequestManager();
+
+        // Loop para cada requisição simulada
+        LOOP_REQ : for(int iReq = 1; iReq <= numberMaxOfRequisitions; iReq++){
+
+            // Apresenta o progresso para a simulação
+            if ((iReq % 10000) == 0){
+                System.out.print(".");
+            }
+
+            // Informa que não houve bloqueio por slots ou QoT
+            hasSlots = true; 
+            hasQoT = true;
+
+            do{ 
+                source = (int) Math.floor(randomGeneration.nextDouble() * this.topology.getNumberOfNodes());		//TODO: Após terminar se testa o simulador, colocar essa linha fora do loop do		
+                destination = (int) Math.floor(randomGeneration.nextDouble() * this.topology.getNumberOfNodes());				
+            } while(source == destination);
+
+            // Remove as requisição espiradas
+            listOfCalls.removeCallRequest(timeSim);
+
+            timeSim = ProbabilityFunctions.exponentialDistribution(networkLoad, this.randomGeneration);
+
+            final CallRequest callRequest = new CallRequest(iReq, source, destination, callRequestType, possibleBitRates, timeSim, meanRateCallDur, this.randomGeneration);
+
+        } // End LOOP_REQ
+        
+        System.out.println("\n\n");
+
+        // Calcula o tempo final de uma simulação
+        final long geralEndTime = System.currentTimeMillis();
+
+        final long geralTotalTime = geralEndTime - geralInitTime;
+        simulationResults.setExecutionTime(geralTotalTime);
+
+        return simulationResults;
     }
 
     
