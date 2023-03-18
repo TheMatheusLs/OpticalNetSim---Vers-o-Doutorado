@@ -1,5 +1,7 @@
 package Network;
 
+import java.util.List;
+
 import Config.ParametersSimulation;
 import Manager.FolderManager;
 import Network.Structure.OpticalLink;
@@ -182,5 +184,22 @@ public class TopologyManager {
 				}
 			}
 		}
+    }
+    
+
+    public void restoreEdges(List<OpticalLink> removedEdges) {
+
+        for (OpticalLink link : removedEdges){
+            link.setLinkState(true);
+        }
+    }
+
+
+    public void restoreNodes(List<OpticalSwitch> removedNodes) {
+
+        for (OpticalSwitch opticalSwitch : removedNodes){
+            opticalSwitch.setNodeState(true);
+        }
+
     }
 }

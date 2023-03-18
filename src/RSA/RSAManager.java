@@ -18,13 +18,15 @@ import Types.GeneralTypes.SpectralAllocationAlgorithmType;
 
 public class RSAManager {
 
-    RoutingAlgorithm routingAlgorithm;
-    SpectrumAlgorithm spectrumAlgorithm;
-    TopologyManager topologyManager;
-    RoutesManager routesManager;
+    private RoutingAlgorithm routingAlgorithm;
+    private SpectrumAlgorithm spectrumAlgorithm;
+    private TopologyManager topologyManager;
+    private RoutesManager routesManager;
 
-    Route route;
-    List<Integer> fSlots;
+    private Route route;
+    private List<Integer> fSlots;
+
+    private int numberOfRoutesToFind;
 
     public RSAManager(TopologyManager topology, RoutesManager routesManager) {
         this.topologyManager = topology;
@@ -39,11 +41,15 @@ public class RSAManager {
         RoutingAlgorithmType routingOption = ParametersSimulation.getRoutingAlgorithmType();
         SpectralAllocationAlgorithmType spectrumOption = ParametersSimulation.getSpectralAllocationAlgorithmType();
 
+        // Determina o número de rotas a ser encontrada pelo algoritmo
         // Verifica se o Roteamento escolhido é Dijkstra e o First-Fit
         if (routingOption.equals(RoutingAlgorithmType.Dijstra)){
+            this.numberOfRoutesToFind = 1;
             this.routingAlgorithm = new Dijkstra();
+        } else {
+            // Usado para o algoritmo de roteamento YEN
+            this.numberOfRoutesToFind = ParametersSimulation.getKShortestRoutes();
         }
-
 
         // Verifica se o Spectrum escolhido é o FF
         if (spectrumOption.equals(SpectralAllocationAlgorithmType.FirstFit)){

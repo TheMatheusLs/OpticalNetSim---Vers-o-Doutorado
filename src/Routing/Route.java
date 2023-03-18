@@ -5,8 +5,10 @@ import java.util.List;
 
 import Config.ParametersSimulation;
 import GeneralClasses.AuxiliaryFunctions;
+import Network.TopologyManager;
 import Network.Structure.OpticalLink;
 import Types.ModulationLevelType;
+import Types.GeneralTypes.CallRequestType;
 import Types.GeneralTypes.PhysicalLayerOption;
 
 public class Route {
@@ -26,12 +28,30 @@ public class Route {
     private int[] allReqSizes;
     private int[] allBitrates;
 
-    public Route(List<Integer> path, int originNone, int destinationNone, List<OpticalLink> upLink, List<OpticalLink> downLink) {
+
+    public Route(List<Integer> path, TopologyManager topology) {
+
+        final int pathSize = path.size();
+
         this.path = path;
-        this.originNone = originNone;
-        this.destinationNone = destinationNone;
-        this.upLink = upLink;
-        this.downLink = downLink;
+        this.originNone = path.get(0);;
+        this.destinationNone = path.get(pathSize - 1);
+
+        // Cria o up e downlink
+        this.upLink = new ArrayList<OpticalLink>();
+        this.downLink = new ArrayList<OpticalLink>(); 
+
+        for (int iPath = 1; iPath < pathSize; iPath++){
+            upLink.add(topology.getLink(this.path.get(iPath - 1), this.path.get(iPath)));
+        }
+        
+        final CallRequestType callRequestType = ParametersSimulation.getCallRequestType();
+
+        if(callRequestType.equals(CallRequestType.Bidirectional)){
+            for(int iPath = (pathSize - 1); iPath > 0; iPath--){
+                downLink.add(topology.getLink(this.path.get(iPath), this.path.get(iPath - 1)));
+            }
+        }
 
         this.allBitrates = ParametersSimulation.getTrafficOption();
         this.allReqSizes = this.findSizeReqForModulationAndBitrate();
@@ -111,4 +131,18 @@ public class Route {
     public boolean isQoT() {
         return true; //TODO Equação do QoT
     }
+
+    public List<Integer> getPath(){
+        return this.path;
+    }
+
+
+    public int getNodeID(int index) {
+        return this.path.get(index);
+    }
+
+    public int getNumNodes() {
+        return this.path.size();
+    }
+
 }

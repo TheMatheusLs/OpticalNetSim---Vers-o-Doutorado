@@ -8,6 +8,7 @@ import Config.ParametersSimulation;
 import Manager.FolderManager;
 import Network.TopologyManager;
 import Routing.Algorithms.Dijkstra;
+import Routing.Algorithms.YEN;
 import Types.GeneralTypes.RoutingAlgorithmType;
 
 public class RoutesManager {
@@ -15,22 +16,14 @@ public class RoutesManager {
     private List<List<Route>> allRoutes;
     private TopologyManager networkTopology;
     private int numberOfNodesInTopology;
-    private int numberOfRoutesToFind;
     private RoutingAlgorithmType routingOption;
 
+    private int numberOfRoutesToFind;
     
     public RoutesManager(TopologyManager topology) {
         this.networkTopology = topology;
         this.numberOfNodesInTopology = topology.getNumberOfNodes();
         this.routingOption = ParametersSimulation.getRoutingAlgorithmType();
-
-        // Determina o número de rotas a ser encontrada pelo algoritmo
-        if (this.routingOption.equals(RoutingAlgorithmType.Dijstra)) {
-            this.numberOfRoutesToFind = 1;
-        } else {
-            // Usado para o algoritmo de roteamento YEN
-            this.numberOfRoutesToFind = ParametersSimulation.getKShortestRoutes();
-        }
 
         // Cria a estrutura para armazenar todas as rotas
         this.allRoutes = this.createAllRoutes();
@@ -38,7 +31,12 @@ public class RoutesManager {
 
         // Inicializa o processo de roteamento estático
         if (this.routingOption.equals(RoutingAlgorithmType.Dijstra)) {
+            this.numberOfRoutesToFind = 1;
             this.RoutingByDijkstra();
+        } else {
+            // Usado para o algoritmo de roteamento YEN
+            this.numberOfRoutesToFind = ParametersSimulation.getKShortestRoutes();
+            this.RoutingByYEN();
         }
 
         // Imprime na tela as rotas
@@ -58,6 +56,26 @@ public class RoutesManager {
         }
 
         return routesInit;
+    }
+
+
+    private void RoutingByYEN() {
+
+        List<Route> routes;
+
+        for(int orN = 0; orN < this.numberOfNodesInTopology; orN++){
+            for(int deN = 0; deN < this.numberOfNodesInTopology; deN++){
+
+                if(orN != deN){
+                    routes = YEN.findRoute(orN, deN, this.networkTopology, this.numberOfRoutesToFind);
+                } else{
+                    routes = null;
+                }
+
+                this.setRoutes(orN, deN, routes);
+            }
+        }
+
     }
 
     
@@ -80,6 +98,22 @@ public class RoutesManager {
     private void setRoute(int orN, int deN, Route route) {
         this.clearRoutes(orN, deN);
         this.addRoute(orN, deN, route);
+    }
+
+
+    private void setRoutes(int orN, int deN, List<Route> routes) {
+        this.clearRoutes(orN, deN);
+        this.addRoutes(orN, deN, routes);
+    }
+    
+    private void addRoutes(int orN, int deN, List<Route> routes) {
+        
+        if (routes != null) {
+            for(Route it : routes)
+                this.addRoute(orN, deN, it);
+        } else {
+            this.addRoute(orN, deN, null);
+        }
     }
 
 

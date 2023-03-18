@@ -25,8 +25,6 @@ public class Dijkstra extends RoutingAlgorithm{
 
     public static Route findRoute(int orNode, int deNode, TopologyManager topology) {
         
-        final CallRequestType callRequestType = ParametersSimulation.getCallRequestType();
-        
         int k = -1, h, hops;
         int numNodes = topology.getNumberOfNodes();
         List<Integer> path = new ArrayList<Integer>();
@@ -108,21 +106,8 @@ public class Dijkstra extends RoutingAlgorithm{
                 if (orNode == 4 && deNode == 0){
                     System.out.println("debug");
                 }
-                
-                //Cria o up e downlink
-                List<OpticalLink> upLink = new ArrayList<OpticalLink>();
-                List<OpticalLink> downLink = new ArrayList<OpticalLink>(); 
 
-                for (int iPath = 1; iPath < invPath.size(); iPath++){
-                    upLink.add(topology.getLink(invPath.get(iPath - 1), invPath.get(iPath)));
-                }
-                if(callRequestType.equals(CallRequestType.Bidirectional)){
-                    for(int iPath = (invPath.size()-1); iPath > 0; iPath--){
-                        downLink.add(topology.getLink(invPath.get(iPath), invPath.get(iPath - 1)));
-                    }
-                }
-
-                routeDJK = new Route(invPath, orNode, deNode, upLink, downLink);
+                routeDJK = new Route(invPath, topology);
             }
         }
         

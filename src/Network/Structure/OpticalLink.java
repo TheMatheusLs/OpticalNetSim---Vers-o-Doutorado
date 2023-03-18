@@ -244,4 +244,9 @@ public class OpticalLink {
 	public double getPowerB(final int slot){
 		return this.powersB[slot];
 	}
+
+
+    public void setLinkState(Boolean linkState) {
+        this.linkState = linkState;
+    }
 }

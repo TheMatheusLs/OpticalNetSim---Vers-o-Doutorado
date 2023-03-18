@@ -59,6 +59,10 @@ public class OpticalSwitch {
         return this.nodeWorking;
     }
 
+    public void setNodeState(boolean nodeWorking){
+        this.nodeWorking = nodeWorking;
+    }
+
     public double getLaserPower(){
     	return this.laserPower;
     }
@@ -71,4 +75,5 @@ public class OpticalSwitch {
     public double getSwitchAtenuation(){
     	return this.switchAtenuation;
     }
+
 }
