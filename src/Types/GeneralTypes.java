@@ -46,4 +46,15 @@ public class GeneralTypes {
     public enum GainAlgorithmType{
         Basic;
     }
+
+    public enum KSortedRoutesByType{
+        MaxToMinOcupation,
+        MinToMaxOcupation,
+        None;
+    }
+
+    public enum PhysicalLayerOption{
+        Disabled,
+        Enabled;
+    }
 }

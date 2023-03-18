@@ -1,5 +1,6 @@
 package Main;
 
+import java.util.List;
 import java.util.Random;
 
 import CallRequests.CallRequest;
@@ -10,9 +11,13 @@ import GeneralClasses.ProbabilityFunctions;
 import Manager.FolderManager;
 import Manager.SimulationResults;
 import Network.TopologyManager;
+import RSA.RSAManager;
+import Routing.Route;
 import Routing.RoutesManager;
 import Types.GeneralTypes.CallRequestType;
+import Types.GeneralTypes.KSortedRoutesByType;
 import Types.GeneralTypes.RandomGenerationType;
+import Types.GeneralTypes.StopCriteriaType;
 
 /**
  * Classe que representa a simulação de uma rede óptica
@@ -30,6 +35,8 @@ public class Simulation {
 
     private TopologyManager topology;
 
+    private RSAManager rsaManager;
+
     public Simulation(FolderManager folderManager) {
         this.folderManager = folderManager;
         this.seedsForLoad = this.generateRandomSeeds();
@@ -46,6 +53,8 @@ public class Simulation {
         // Cria uma nova instância de routing
         this.routesManager = new RoutesManager(this.topology);
         this.routesManager.save(folderManager);
+
+        this.rsaManager = new RSAManager(this.topology, this.routesManager);
 
     }
 
@@ -89,7 +98,7 @@ public class Simulation {
         return auxSeeds;
     }
 
-    public void runMultiLoad() {
+    public void runMultiLoad() throws Exception {
 
         final int numberOfLoadNetworkPoints = ParametersSimulation.getNumberOfPointSloadNetwork();
         final double maxLoadNetwork = ParametersSimulation.getMaxLoadNetwork();
@@ -130,17 +139,21 @@ public class Simulation {
         }
     }
 
-    private SimulationResults runSingleLoad(double networkLoad, SimulationResults simulationResults) {
+    private SimulationResults runSingleLoad(double networkLoad, SimulationResults simulationResults) throws Exception {
         final long geralInitTime = System.currentTimeMillis();
 
         final double meanRateCallDur = ConfigSimulator.getMeanRateOfCallsDuration();
         final long numberMaxOfRequisitions = ParametersSimulation.getMaxNumberOfRequisitions();
         final CallRequestType callRequestType = ParametersSimulation.getCallRequestType();
         final int[] possibleBitRates = ParametersSimulation.getTrafficOption();
+        final StopCriteriaType stopCriteria = ParametersSimulation.getStopCriteriaType();  
 
         int source, destination;
         double timeSim = 0.0;
         boolean hasSlots, hasQoT;
+        int	numBlockBySlots = 0;
+		int numBlockByQoT = 0;
+        long limitCallRequest = 0; 
 
         final CallRequestManager listOfCalls = new CallRequestManager();
 
@@ -153,8 +166,8 @@ public class Simulation {
             }
 
             // Informa que não houve bloqueio por slots ou QoT
-            hasSlots = true; 
-            hasQoT = true;
+            hasSlots = false; 
+            hasQoT = false;
 
             do{ 
                 source = (int) Math.floor(randomGeneration.nextDouble() * this.topology.getNumberOfNodes());		//TODO: Após terminar se testa o simulador, colocar essa linha fora do loop do		
@@ -164,13 +177,63 @@ public class Simulation {
             // Remove as requisição espiradas
             listOfCalls.removeCallRequest(timeSim);
 
-            timeSim = ProbabilityFunctions.exponentialDistribution(networkLoad, this.randomGeneration);
+            timeSim += ProbabilityFunctions.exponentialDistribution(networkLoad, this.randomGeneration);
 
             final CallRequest callRequest = new CallRequest(iReq, source, destination, callRequestType, possibleBitRates, timeSim, meanRateCallDur, this.randomGeneration);
+
+            // Executa o problema do RSA
+            this.rsaManager.findRSA(source, destination, callRequest);
+            Route route = this.rsaManager.getRoute();
+            List<Integer> fSlotsIndex = this.rsaManager.getSlotsIndex();
+
+            if (route != null){
+
+                if(!fSlotsIndex.isEmpty() && fSlotsIndex.size() == callRequest.getReqNumbOfSlots()){	// NOPMD by Andr� on 13/06/17 13:12
+					hasSlots = true;
+				}
+
+                hasQoT = route.isQoT();
+
+                if(hasSlots && hasQoT){
+					callRequest.setFrequencySlots(fSlotsIndex);
+					callRequest.setRoute(route);
+
+					callRequest.allocate(topology.getListOfNodes());
+					listOfCalls.addCall(callRequest);
+				}
+
+            } else {
+                try {
+                    throw new Exception("A Rota está vazia em Simulation");
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            if(!hasSlots){
+				numBlockBySlots++;
+			}else if(!hasQoT){
+				numBlockByQoT++; 
+			}
+
+            limitCallRequest = iReq;
+
+            if (stopCriteria == StopCriteriaType.BlockedCallRequest){
+                if ((numBlockBySlots + numBlockByQoT) >= ParametersSimulation.getMaxNumberOfBlockedRequests()){
+                    break LOOP_REQ;
+                }
+            }
 
         } // End LOOP_REQ
         
         System.out.println("\n\n");
+
+        listOfCalls.desallocateAllRequests(); // Remove todas as requisições alocadas
+
+        this.checkTopologyAndRouting();
+
+        listOfCalls.eraseCallList();
 
         // Calcula o tempo final de uma simulação
         final long geralEndTime = System.currentTimeMillis();
@@ -178,7 +241,20 @@ public class Simulation {
         final long geralTotalTime = geralEndTime - geralInitTime;
         simulationResults.setExecutionTime(geralTotalTime);
 
+        double PB = (double)(numBlockBySlots + numBlockByQoT) / limitCallRequest;
+        simulationResults.setProbabilityBlocking(PB);
+        simulationResults.setNumBlockBySlots(numBlockBySlots);
+        simulationResults.setNumBlockByQoT(numBlockByQoT);
+
         return simulationResults;
+    }
+
+    private void checkTopologyAndRouting() throws Exception {
+        // Verifica se todos os links estão limpos
+		this.topology.checkIfIsClean();
+
+		// Verifica se todas as rotas estão limpas
+        this.routesManager.checkIfIsClean();
     }
 
     

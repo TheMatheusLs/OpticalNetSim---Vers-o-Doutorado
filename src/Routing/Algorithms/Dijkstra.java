@@ -7,10 +7,26 @@ import java.util.List;
 import Network.TopologyManager;
 import Network.Structure.OpticalLink;
 import Routing.Route;
+import Types.GeneralTypes.CallRequestType;
+import Config.ParametersSimulation;
 
-public class Dijkstra {
+public class Dijkstra extends RoutingAlgorithm{
+
+    public Dijkstra(){
+        
+    }
+
+
+    @Override
+    public Route selectRoute(List<Route> routes){
+        return routes.get(0);
+    }
+
 
     public static Route findRoute(int orNode, int deNode, TopologyManager topology) {
+        
+        final CallRequestType callRequestType = ParametersSimulation.getCallRequestType();
+        
         int k = -1, h, hops;
         int numNodes = topology.getNumberOfNodes();
         List<Integer> path = new ArrayList<Integer>();
@@ -88,8 +104,25 @@ public class Dijkstra {
                 
                 for(h = 0; h <= hops; h++)
                     invPath.add(path.get(hops-h));
-    
-                routeDJK = new Route(invPath, orNode, deNode);
+
+                if (orNode == 4 && deNode == 0){
+                    System.out.println("debug");
+                }
+                
+                //Cria o up e downlink
+                List<OpticalLink> upLink = new ArrayList<OpticalLink>();
+                List<OpticalLink> downLink = new ArrayList<OpticalLink>(); 
+
+                for (int iPath = 1; iPath < invPath.size(); iPath++){
+                    upLink.add(topology.getLink(invPath.get(iPath - 1), invPath.get(iPath)));
+                }
+                if(callRequestType.equals(CallRequestType.Bidirectional)){
+                    for(int iPath = (invPath.size()-1); iPath > 0; iPath--){
+                        downLink.add(topology.getLink(invPath.get(iPath), invPath.get(iPath - 1)));
+                    }
+                }
+
+                routeDJK = new Route(invPath, orNode, deNode, upLink, downLink);
             }
         }
         

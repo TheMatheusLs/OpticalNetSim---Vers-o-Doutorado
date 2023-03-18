@@ -165,4 +165,22 @@ public class TopologyManager {
 
         return this.listOfNodes[index];
     }
+
+    public OpticalSwitch[] getListOfNodes() {
+        return this.listOfNodes;
+    }
+
+    public void checkIfIsClean() throws Exception {
+        for (int s = 0; s < networkOpticalLinks.length;s++){
+			for (int d = 0; d < networkOpticalLinks.length;d++){
+				if (networkOpticalLinks[s][d] != null){
+					for (int i = 0; i < ParametersSimulation.getNumberOfSlotsPerLink();i++){
+						if (networkOpticalLinks[s][d].getPowerA(i) != 0){
+							throw new Exception("As rotas não foram limpas corretamente");
+						}
+					}
+				}
+			}
+		}
+    }
 }

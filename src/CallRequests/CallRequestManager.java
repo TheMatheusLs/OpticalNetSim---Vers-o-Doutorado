@@ -43,4 +43,24 @@ public class CallRequestManager {
 			}			 
 		}
     }
+
+    /**
+	  * M�todo para adicionar um nova conex�o a lista.
+	  * @param callRequest
+	  * @author Andr� 			
+	  */	 
+	 public void addCall(final CallRequest callRequest){
+		this.callReqList.add(callRequest);
+		this.numbOfEstCallReq++;		 
+	}
+
+	
+    public void desallocateAllRequests(){
+		removeCallRequest(Double.MAX_VALUE);
+	}
+
+    public void eraseCallList() {
+		this.callReqList = new ArrayList<CallRequest>();
+		this.numbOfEstCallReq = 0;
+    }
 }

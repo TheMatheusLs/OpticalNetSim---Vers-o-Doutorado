@@ -1,7 +1,10 @@
 package Config;
 
+import Types.ModulationLevelType;
 import Types.GeneralTypes.CallRequestType;
+import Types.GeneralTypes.KSortedRoutesByType;
 import Types.GeneralTypes.LinkCostType;
+import Types.GeneralTypes.PhysicalLayerOption;
 import Types.GeneralTypes.RandomGenerationType;
 import Types.GeneralTypes.RoutingAlgorithmType;
 import Types.GeneralTypes.SpectralAllocationAlgorithmType;
@@ -17,8 +20,8 @@ public class ParametersSimulation{
     final static int mainSeed = 42; 
 
     // Configura o número e as cargas para simulação
-    final static double minLoadNetwork = 300;
-    final static double maxLoadNetwork = 300;
+    final static double minLoadNetwork = 260;
+    final static double maxLoadNetwork = 260;
     final static int numberOfPointsLoadNetwork = 1;
     final static int numberOfSimulationsPerLoadNetwork = 1;
     
@@ -31,6 +34,7 @@ public class ParametersSimulation{
     // Algoritmo de Roteamento
     final static RoutingAlgorithmType routingAlgorithmType = RoutingAlgorithmType.Dijstra;
     final static int kShortestRoutes = 1;
+    final static KSortedRoutesByType kSortedRoutesByType = KSortedRoutesByType.None;
 
     
     // Algoritmo de alocação do espectro
@@ -41,6 +45,7 @@ public class ParametersSimulation{
      */
     
     // Configurações Gerais
+    final static PhysicalLayerOption physicalLayerOption = PhysicalLayerOption.Disabled;
     final static int[] trafficOption = new int[]{100, 200, 400};
     final static LinkCostType linkCostType = LinkCostType.Hops;
     final static CallRequestType callRequestType = CallRequestType.Unidirectional;
@@ -50,6 +55,14 @@ public class ParametersSimulation{
     final static RandomGenerationType randomGeneration = RandomGenerationType.PseudoRandomGeneration;
     final static StopCriteriaType stopCriteria = StopCriteriaType.TotalCallRequest;
 
+
+    final static ModulationLevelType[] mudulationLevelType = { //Formato de modulação, DEVE SER ORDENADO DO DE MAIOR CONSTELAÇÃO
+		// ModulationLevelType.SIXTYFOUR_QAM,
+		// ModulationLevelType.THIRTYTWO_QAM,
+		// ModulationLevelType.SIXTEEN_QAM,
+        ModulationLevelType.EIGHT_QAM,
+		// ModulationLevelType.FOUR_QAM,
+    };
 
     // Pasta onde serão armazenadas os relatórios da simulação. Em caso da utilização no sistema linux é necessário aterar a classe CreateFolder.java
     final static String pathToSaveResults = "D:\\ProgrammingFiles\\ReportsOpticalNetSim\\"; 
@@ -128,6 +141,22 @@ public class ParametersSimulation{
 
     public static CallRequestType getCallRequestType() {
         return callRequestType;
+    }
+
+    public static KSortedRoutesByType getKSortedRoutesByType() {
+        return kSortedRoutesByType; //TODO: Colocar no to string
+    }
+
+    public static ModulationLevelType[] getMudulationLevelType() {
+        return mudulationLevelType; //TODO: Colocar no to string
+    }
+
+    public static PhysicalLayerOption getPhysicalLayerOption() {
+        return physicalLayerOption; //TODO: Colocar no to string
+    }
+
+    public static StopCriteriaType getStopCriteriaType() {
+        return stopCriteria; //TODO: Colocar no to string
     }
 
     public static String save() {

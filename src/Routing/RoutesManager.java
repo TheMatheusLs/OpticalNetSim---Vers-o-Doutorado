@@ -113,4 +113,24 @@ public class RoutesManager {
     public void save(FolderManager folderManager) {
         folderManager.writeRoutes((String.valueOf(this)));
     }
+
+
+    public List<Route> getRoutesForOD(int source, int destination) {
+        return allRoutes.get(source * this.numberOfNodesInTopology + destination);
+    }
+
+
+    public void checkIfIsClean() {
+        // for (List<Route> routes: allRoutes){
+        //     for (Route route : routes){
+        //         if (route != null){
+        //             for (int i = 0; i < ParametersSimulation.getNumberOfSlotsPerLink();i++){
+        //                 if (route.getSlotValue(i) != 0){
+        //                     throw new Exception("As rotas não foram limpas corretamente");
+        //                 }
+        //             }
+        //         }
+        //     }
+		// }
+    }
 }

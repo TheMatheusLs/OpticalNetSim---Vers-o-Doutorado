@@ -70,4 +70,25 @@ public class OpticalSpan {
     public OpticalAmplifier getOpticalAmplifier() {
 		return this.opticalAmplifier;
 	}
+
+    /**
+	 * M�todo para retornar a fibra �ptica do Span.
+	 * @return O atributo OpticalFiber
+	 * @author Andr� 			
+	 */		
+	public OpticalFiber getOpticalFiber() {
+		return this.opticalFiber;
+	}
+
+    /**
+	 * M�todo para configurar a pot�ncia do slot alocado na fibra �ptica do Span.
+	 * @param powerValue
+	 * @param slot
+	 * @author Andr� 			
+	 */
+	public void setPower(final double powerValue, final int slot){
+		this.totalPower -= this.powers[slot];
+		this.totalPower += powerValue;
+		this.powers[slot] = powerValue;
+	}
 }

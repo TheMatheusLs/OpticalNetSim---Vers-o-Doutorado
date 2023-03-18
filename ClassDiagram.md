@@ -1,8 +1,10 @@
 classDiagram
     
     Runner o-- FolderManager
+    Runner o-- Simulation
     Simulation o-- FolderManager
     Simulation o-- Topology
+    Simulation o-- RoutesManager
     OpticalSpan o-- OpticalAmplifier
     TopologyGeneral o-- OpticalSwitch
     TopologyGeneral <-- TopologyNSFNet
@@ -45,6 +47,17 @@ classDiagram
         - int[] generateRandomSeeds()
         + void inicialize()
     }
+
+    %% Estrutura de Roteamento
+    class RoutesManager {
+
+
+
+
+    }
+
+
+    %% Estrutura da rede
 
     class GainAlgorithm {
         - GainAlgorithm GAIN_INSTANCE

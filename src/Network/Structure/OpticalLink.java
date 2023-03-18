@@ -86,6 +86,9 @@ public class OpticalLink {
 		return spans;
 	}
 
+    public boolean isAvailableSlotAt(final int slot){
+    	return this.powersA[slot] == 0.0;
+    }
 
     /**
      * Remove um slot de uso
@@ -171,4 +174,74 @@ public class OpticalLink {
     public int getSpanSize() {
         return spans.size();
     }
+
+    /**
+	 * M�todo para configurar a pot�ncia do slot no optical link.
+	 * @param slot
+	 * @param initialPower
+	 * @author Andr� 			
+	 */	
+	public void allocate(final int slot, final double initialPower){		
+		
+        final double dioLoss =  Math.pow(10, ConfigSimulator.getDioLoss() / 10);
+		final double muxGain = Math.pow(10, ConfigSimulator.getMuxLoss() / 10);
+		final double powBefBooster = initialPower * muxGain;			
+		this.setPowerA(powBefBooster, slot);		
+		
+		double signal = powBefBooster * this.booster.getGainInLinear();
+		
+        for (OpticalSpan span : this.spans) {
+            final double fiberGain = span.getOpticalFiber().getLength() * ConfigSimulator.getFiberAtenuationCoefficient();
+
+            signal *= dioLoss;
+            signal *= Math.pow(10, fiberGain / 10);
+            signal *= dioLoss;	
+
+            span.setPower(signal, slot);
+
+            signal *= span.getOpticalAmplifier().getGainInLinear();
+        }
+
+		this.setPowerB(signal * muxGain, slot);		
+	}
+
+    /**
+	 * M�todo para configurar a pot�ncia do slot antes do booster no optical link.
+	 * @param powerValue
+	 * @param slot
+	 * @author Andr� 			
+	 */	
+	private void setPowerA(final double powerValue, final int slot){
+		this.totalPowerInA -= this.powersA[slot];
+		this.totalPowerInA += powerValue;
+		this.powersA[slot] = powerValue;
+	}
+
+    private void setPowerB(final double powerValue, final int slot){
+		this.totalPowerInB -= this.powersB[slot];
+		this.totalPowerInB += powerValue;
+		this.powersB[slot] = powerValue;
+	}
+
+    /**
+	 * M�todo para retornar a pot�ncia do slot antes do booster
+	 * no optical link.
+	 * @return A pot�ncia do slot antes do booster. 
+	 * @param slot
+	 * @author Andr� 			
+	 */		
+	public double getPowerA(final int slot){
+		return this.powersA[slot];
+	}
+
+    /**
+	 * M�todo para retornar a pot�ncia do slot depois do demux
+	 * no optical link.
+	 * @param slot
+	 * @return A pot�ncia do slot depois do pr�-amplificador.
+	 * @author Andr� 			
+	 */		   
+	public double getPowerB(final int slot){
+		return this.powersB[slot];
+	}
 }

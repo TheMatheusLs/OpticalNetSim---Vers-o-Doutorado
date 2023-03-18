@@ -12,18 +12,14 @@ public class SimulationResults {
     private double MSCLCycle;
     private long currentRandomSeed;
 
-    
+    private long numBlockBySlots;
+    private long numBlockByQoT;
+
     public SimulationResults(double networkLoad, int nSim, long currentRandomSeed) {
         this.networkLoad = networkLoad;
         this.nSim = nSim;
         this.currentRandomSeed = currentRandomSeed;
     }
-
-    @Override
-    public String toString() {
-        return "networkLoad = " + networkLoad + ", \nnSim = " + nSim + ", \nprobabilityBlocking = " + probabilityBlocking + ", \nexecutionTime = " + executionTime + ", \nMSCLCycle = " + MSCLCycle + ", \ncurrentRandomSeed = " + currentRandomSeed +"\n\n";
-    }
-
 
     public double getNetworkLoad() {
         return networkLoad;
@@ -82,5 +78,29 @@ public class SimulationResults {
 
     public void setCurrentRandomSeed(long currentRandomSeed) {
         this.currentRandomSeed = currentRandomSeed;
+    }
+
+    public long getNumBlockByQoT() {
+        return numBlockByQoT;
+    }
+
+    public void setNumBlockByQoT(long numBlockByQoT) {
+        this.numBlockByQoT = numBlockByQoT;
+    }
+
+    public long getNumBlockBySlots() {
+        return numBlockBySlots;
+    }
+
+    public void setNumBlockBySlots(long numBlockBySlots) {
+        this.numBlockBySlots = numBlockBySlots;
+    }
+
+    @Override
+    public String toString() {
+        return "*** SimulationResults ***\nnetworkLoad=" + networkLoad + ", \nnSim=" + nSim + ", \nprobabilityBlocking="
+                + probabilityBlocking + ", \nexecutionTime=" + executionTime + ", \nMSCLCycle=" + MSCLCycle
+                + ", \ncurrentRandomSeed=" + currentRandomSeed + ", \nnumBlockBySlots=" + numBlockBySlots
+                + ", \nnumBlockByQoT=" + numBlockByQoT + "\n\n";
     }
 }

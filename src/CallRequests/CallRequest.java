@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import GeneralClasses.AuxiliaryFunctions;
 import GeneralClasses.ProbabilityFunctions;
 import Network.Structure.OpticalLink;
+import Network.Structure.OpticalSwitch;
 import Routing.Route;
 import Types.GeneralTypes.CallRequestType;
 
@@ -22,12 +24,13 @@ public class CallRequest {
     private double decayTime;
     private double duration;
     private Route route;
-    private final List<Integer> frequencySlots;
+    private List<Integer> frequencySlots;
     private final transient List<Integer> possibleBitRates;
     private int selectedBitRate;
     private CallRequestType callRequestType;
     private int sourceNodeID;
     private int destinationNodeID;
+    private int reqNumbOfSlots;
 
     
     public CallRequest(final int callRequestId, final int sourceNodeID, final int destinationNodeID, final CallRequestType callRequestType, final int[] possibleBitRates, final double time, final double meanDurationRate, Random randomGeneration){
@@ -42,8 +45,20 @@ public class CallRequest {
         this.route = null;
 
         this.setTime(time, meanDurationRate, randomGeneration);
+        this.sortBitRate(randomGeneration);
     }
 
+    public void setFrequencySlots(List<Integer> frequencySlots) {
+        this.frequencySlots = frequencySlots;
+    }
+
+    public void setReqNumbOfSlots(int reqNumbOfSlots) {
+        this.reqNumbOfSlots = reqNumbOfSlots;
+    }
+
+    public int getReqNumbOfSlots(){
+        return this.reqNumbOfSlots;
+    }
 
     /**
      * Método para sortear a taxa de transmissão.
@@ -55,6 +70,11 @@ public class CallRequest {
 		final int number = (int) (randomGeneration.nextDouble() * size);
         this.selectedBitRate = this.possibleBitRates.get(number);
 	}
+
+    public int getSelectedBitRate(){
+        return selectedBitRate;
+    }
+
 
     /**
      * Método para configurar o tempo de duração e queda da requisição de chamada.
@@ -110,4 +130,62 @@ public class CallRequest {
     public void setRoute(Route route) {
         this.route = route;
     }
+
+    public void allocate(OpticalSwitch[] listOfNodes){
+		
+        List<OpticalLink> uplink = route.getUpLink();
+        List<OpticalLink> downlink = route.getDownLink();
+
+		for(int FreqSlot : this.frequencySlots){
+			
+			final OpticalLink optLinkInbound = uplink.get(0);
+			final OpticalSwitch optSwitch = AuxiliaryFunctions.getNodeByID(this.sourceNodeID, listOfNodes);
+			final double laserPower = optSwitch.getLaserPower();
+
+            optLinkInbound.allocate(FreqSlot, laserPower);
+
+			for(int iUplink = 1; iUplink < uplink.size(); iUplink++){
+				
+				final int source = uplink.get(iUplink).getSourceNode();
+                
+				final OpticalLink optLink = uplink.get(iUplink - 1);
+
+				final OpticalSwitch opticalSwitch = AuxiliaryFunctions.getNodeByID(source, listOfNodes);
+
+                final double powerBinSlot = optLink.getPowerB(FreqSlot); //Pega a potência na saída do último optical link já analisado.
+
+				final double switchAten = opticalSwitch.getSwitchAtenuation();	
+
+				final double potOut  = powerBinSlot * switchAten;	
+
+				uplink.get(iUplink).allocate(FreqSlot, potOut);
+
+			}
+			
+			//Alocar a volta da chamada
+			if(this.callRequestType == CallRequestType.Bidirectional){
+				
+                final OpticalLink optLinkOutbound = downlink.get(0);
+
+                optLinkOutbound.allocate(FreqSlot, laserPower);
+				
+				for(int iDownlink = 1; iDownlink < downlink.size(); iDownlink++){    
+
+            		final int source = downlink.get(iDownlink).getSourceNode();    
+
+            		final OpticalLink optLink = downlink.get(iDownlink - 1);
+
+    				final OpticalSwitch opticalSwitch = AuxiliaryFunctions.getNodeByID(source, listOfNodes);
+
+                    final double powerBinSlot = optLink.getPowerB(FreqSlot); //Pega a potência na saída do último optical link já analisado.
+
+                    final double switchAten = opticalSwitch.getSwitchAtenuation();
+				
+    				final double potOut  = powerBinSlot * switchAten;    
+
+                    downlink.get(iDownlink).allocate(FreqSlot, potOut);
+            	}
+			}
+		}		
+	}
 }
