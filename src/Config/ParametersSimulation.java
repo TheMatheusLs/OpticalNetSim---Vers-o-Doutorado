@@ -33,7 +33,7 @@ public class ParametersSimulation{
     
     // Algoritmo de Roteamento
     final static RoutingAlgorithmType routingAlgorithmType = RoutingAlgorithmType.YEN;
-    final static int kShortestRoutes = 5;
+    final static int kShortestRoutes = 2;
     final static KSortedRoutesByType kSortedRoutesByType = KSortedRoutesByType.None;
 
     

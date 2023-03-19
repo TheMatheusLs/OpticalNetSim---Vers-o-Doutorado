@@ -9,7 +9,7 @@ import Network.Structure.OpticalLink;
 import Network.Structure.OpticalSwitch;
 import Routing.Route;
 
-public class YEN {
+public class YEN extends RoutingAlgorithm{
     
 
     public YEN(){

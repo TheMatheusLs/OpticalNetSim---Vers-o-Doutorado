@@ -10,6 +10,7 @@ import Routing.Route;
 import Routing.RoutesManager;
 import Routing.Algorithms.Dijkstra;
 import Routing.Algorithms.RoutingAlgorithm;
+import Routing.Algorithms.YEN;
 import Spectrum.Algorithms.FirstFit;
 import Spectrum.Algorithms.SpectrumAlgorithm;
 import Types.GeneralTypes.KSortedRoutesByType;
@@ -48,6 +49,7 @@ public class RSAManager {
             this.routingAlgorithm = new Dijkstra();
         } else {
             // Usado para o algoritmo de roteamento YEN
+            this.routingAlgorithm = new YEN();
             this.numberOfRoutesToFind = ParametersSimulation.getKShortestRoutes();
         }
 
@@ -55,10 +57,15 @@ public class RSAManager {
         if (spectrumOption.equals(SpectralAllocationAlgorithmType.FirstFit)){
             this.spectrumAlgorithm = new FirstFit();
         }
+    }
+
+    public void findRouteAndSlots(int source, int destination, CallRequest callRequest) {
+
+        this.findRoutingSA(source, destination, callRequest);
 
     }
 
-    public void findRSA(int source, int destination, CallRequest callRequest) {
+    private void findRoutingSA(int source, int destination, CallRequest callRequest) {
         // Captura as rotas para o par origem destino
         List<Route> routeSolution = this.routesManager.getRoutesForOD(source, destination);
 
@@ -67,14 +74,26 @@ public class RSAManager {
             //TODO: Ordenar as rotas por ocupação e demais formas
         }
 
-        this.route = this.routingAlgorithm.selectRoute(routeSolution);
+        this.route = null;
+        this.fSlots = null;
 
-        // Calcula o tamanho da requisição
-        int reqNumbOfSlots = this.route.getReqSize(callRequest.getSelectedBitRate());
-        callRequest.setReqNumbOfSlots(reqNumbOfSlots);
-        
-        this.fSlots = this.spectrumAlgorithm.findFrequencySlots(reqNumbOfSlots, this.route);
+        // Algoritmo para o RSA
+        for (Route currentRoute : routeSolution){
+
+            // Calcula o tamanho da requisição
+            int reqNumbOfSlots = currentRoute.getReqSize(callRequest.getSelectedBitRate());
+            
+            List<Integer> slots = this.spectrumAlgorithm.findFrequencySlots(reqNumbOfSlots, currentRoute);
+            
+            if(!slots.isEmpty() && slots.size() == reqNumbOfSlots){
+                this.route = currentRoute;
+                this.fSlots = slots;
+                callRequest.setReqNumbOfSlots(reqNumbOfSlots);
+                break;
+            } 
+        }
     }
+
 
     private void routingSA(List<Route> routesOD, int reqNumbOfSlots, SpectrumAlgorithm spectrumAlgorithm){
 

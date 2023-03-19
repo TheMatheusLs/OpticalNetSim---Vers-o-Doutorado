@@ -162,7 +162,7 @@ public class Simulation {
 
             // Apresenta o progresso para a simulação
             if ((iReq % 10000) == 0){
-                System.out.print(".");
+                System.out.print(">");
             }
 
             // Informa que não houve bloqueio por slots ou QoT
@@ -182,7 +182,7 @@ public class Simulation {
             final CallRequest callRequest = new CallRequest(iReq, source, destination, callRequestType, possibleBitRates, timeSim, meanRateCallDur, this.randomGeneration);
 
             // Executa o problema do RSA
-            this.rsaManager.findRSA(source, destination, callRequest);
+            this.rsaManager.findRouteAndSlots(source, destination, callRequest);
             Route route = this.rsaManager.getRoute();
             List<Integer> fSlotsIndex = this.rsaManager.getSlotsIndex();
 
@@ -202,13 +202,6 @@ public class Simulation {
 					listOfCalls.addCall(callRequest);
 				}
 
-            } else {
-                try {
-                    throw new Exception("A Rota está vazia em Simulation");
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
             }
 
             if(!hasSlots){

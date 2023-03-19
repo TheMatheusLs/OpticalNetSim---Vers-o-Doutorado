@@ -68,11 +68,12 @@ public class RoutesManager {
 
                 if(orN != deN){
                     routes = YEN.findRoute(orN, deN, this.networkTopology, this.numberOfRoutesToFind);
+                    this.setRoutes(orN, deN, routes);
                 } else{
                     routes = null;
+                    this.setRoute(orN, deN, null);
                 }
 
-                this.setRoutes(orN, deN, routes);
             }
         }
 
