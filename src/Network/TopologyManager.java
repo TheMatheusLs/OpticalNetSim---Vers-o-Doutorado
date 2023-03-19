@@ -185,7 +185,7 @@ public class TopologyManager {
 			}
 		}
     }
-    
+
 
     public void restoreEdges(List<OpticalLink> removedEdges) {
 
@@ -195,11 +195,11 @@ public class TopologyManager {
     }
 
 
-    public void restoreNodes(List<OpticalSwitch> removedNodes) {
+    public void restoreNodes(List<Integer> rootRoutePath) {
 
-        for (OpticalSwitch opticalSwitch : removedNodes){
+        for (int oSwitchID: rootRoutePath){
+            OpticalSwitch opticalSwitch = this.getNode(oSwitchID);
             opticalSwitch.setNodeState(true);
         }
-
     }
 }

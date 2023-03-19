@@ -103,10 +103,6 @@ public class Dijkstra extends RoutingAlgorithm{
                 for(h = 0; h <= hops; h++)
                     invPath.add(path.get(hops-h));
 
-                if (orNode == 4 && deNode == 0){
-                    System.out.println("debug");
-                }
-
                 routeDJK = new Route(invPath, topology);
             }
         }

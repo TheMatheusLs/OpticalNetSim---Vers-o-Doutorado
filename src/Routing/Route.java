@@ -28,6 +28,10 @@ public class Route {
     private int[] allReqSizes;
     private int[] allBitrates;
 
+    private double cost;
+
+    private int kFindIndex;
+
 
     public Route(List<Integer> path, TopologyManager topology) {
 
@@ -55,8 +59,40 @@ public class Route {
 
         this.allBitrates = ParametersSimulation.getTrafficOption();
         this.allReqSizes = this.findSizeReqForModulationAndBitrate();
+
+        this.setCost(topology);
+        this.kFindIndex = -1;
     }
 
+    public void setKFindIndex(int kFindIndex) {
+        this.kFindIndex = kFindIndex;
+    }
+
+    private int getNumHops() {
+        return this.path.size() - 1;
+    }
+
+    private void setCost(TopologyManager topology) {
+        OpticalLink link;
+        double cost = 0.0;
+        
+        for(int a = 0; a < this.getNumHops(); a++){
+            link = topology.getLink(this.path.get(a), this.path.get(a + 1));
+            cost += link.getCost();
+        }
+        
+        this.setCost(cost);
+    }
+
+
+    private void setCost(double cost) {
+        
+        this.cost = cost;
+    }
+
+    public double getCost() {
+        return this.cost;
+    }
 
     /**
      * Calcula o tamanho da requisição que será usada para cada modulação e cada bitrate
