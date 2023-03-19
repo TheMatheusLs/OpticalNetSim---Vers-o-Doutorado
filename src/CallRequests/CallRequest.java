@@ -188,4 +188,11 @@ public class CallRequest {
 			}
 		}		
 	}
+
+    /**
+	 * Método para retornar os slots requeridos.	
+	 */    
+    public List<Integer> getFrequencySlots(){
+    	return this.frequencySlots;
+    }
 }

@@ -8,50 +8,53 @@ import Config.ParametersSimulation;
 import Network.TopologyManager;
 import Routing.Route;
 import Routing.RoutesManager;
-import Routing.Algorithms.Dijkstra;
-import Routing.Algorithms.RoutingAlgorithm;
-import Routing.Algorithms.YEN;
 import Spectrum.Algorithms.FirstFit;
 import Spectrum.Algorithms.SpectrumAlgorithm;
 import Types.GeneralTypes.KSortedRoutesByType;
+import Types.GeneralTypes.RSAOrderType;
 import Types.GeneralTypes.RoutingAlgorithmType;
 import Types.GeneralTypes.SpectralAllocationAlgorithmType;
 
 public class RSAManager {
 
-    private RoutingAlgorithm routingAlgorithm;
+    /**
+     * Algoritmo de alocação do espectro
+     */
     private SpectrumAlgorithm spectrumAlgorithm;
-    private TopologyManager topologyManager;
+    /**
+     * Classe de gerenciamento do Roteamento
+     */
     private RoutesManager routesManager;
-
+    /**
+     * Rota selecionada pelo algoritmo de roteamento
+     */
     private Route route;
+    /**
+     * Conjunto de slots selecionados pelo algoritmo de alocação do espectro
+     */
     private List<Integer> fSlots;
+    /**
+     * Alocação do espectro em RSA ou SAR
+     */
+    private RSAOrderType rsaOrderType;
 
-    private int numberOfRoutesToFind;
 
-    public RSAManager(TopologyManager topology, RoutesManager routesManager) {
-        this.topologyManager = topology;
+    /**
+     * Construtor da classe RSAManager
+     * 
+     * @param routesManager Classe para gerenciar o roteamento
+     */
+    public RSAManager(RoutesManager routesManager) {
         this.routesManager = routesManager;
 
         this.route = null;
         this.fSlots = new ArrayList<Integer>();
 
-        this.routingAlgorithm = null;
         this.spectrumAlgorithm = null;
+        rsaOrderType = ParametersSimulation.getRSAOrderType();
 
         RoutingAlgorithmType routingOption = ParametersSimulation.getRoutingAlgorithmType();
         SpectralAllocationAlgorithmType spectrumOption = ParametersSimulation.getSpectralAllocationAlgorithmType();
-
-        // Determina o número de rotas a ser encontrada pelo algoritmo
-        // Verifica se o Roteamento escolhido é Dijkstra e o First-Fit
-        if (routingOption.equals(RoutingAlgorithmType.Dijstra)){
-            this.numberOfRoutesToFind = 1;
-            this.routingAlgorithm = new Dijkstra();
-        } else {
-            // Usado para o algoritmo de roteamento YEN
-            this.routingAlgorithm = new YEN();
-            this.numberOfRoutesToFind = ParametersSimulation.getKShortestRoutes();
-        }
 
         // Verifica se o Spectrum escolhido é o FF
         if (spectrumOption.equals(SpectralAllocationAlgorithmType.FirstFit)){
@@ -59,12 +62,87 @@ public class RSAManager {
         }
     }
 
+    /**
+     * Método para gerenciar os algoritmos de roteamento e alocação do espectro.
+     * 
+     * @param source Origem 
+     * @param destination Destino
+     * @param callRequest Requisição
+     */
     public void findRouteAndSlots(int source, int destination, CallRequest callRequest) {
+        
+        if (this.rsaOrderType == RSAOrderType.Disable){
+            
+        }
 
-        this.findRoutingSA(source, destination, callRequest);
+        if (this.rsaOrderType == RSAOrderType.Routing_SA){
+            this.findRoutingSA(source, destination, callRequest);
+        }
 
+        if (this.rsaOrderType == RSAOrderType.SA_Routing){
+            this.findSARouting(source, destination, callRequest);
+        }
     }
 
+    /**
+     * Método para realizar o roteamento por SAR. 
+     * 
+     * Esse algoritmo testa o primeiro slot e tenta uma alocação no seu espectro usando o algoritmo FF. Caso não seja possível alocar na primeiro slot da primera rota, busca no primeiro slot das próximas rotas. Depois testa o segundo slot e assim sucessivamente. 
+     * 
+     * @param source Origem 
+     * @param destination Destino
+     * @param callRequest Requisição
+     */
+    private void findSARouting(int source, int destination, CallRequest callRequest) {
+        
+        final int numberMaxSlotsPerLink = ParametersSimulation.getNumberOfSlotsPerLink();
+
+        // Captura as rotas para o par origem destino
+        List<Route> routeSolution = this.routesManager.getRoutesForOD(source, destination);
+
+        LOOP_SLOT:for (int firstIndexSlot = 0; firstIndexSlot < numberMaxSlotsPerLink;) {
+
+            LOOP_ROUTE:for (Route currentRoute : routeSolution){
+
+                if (currentRoute == null){
+                    continue LOOP_ROUTE;
+                }
+
+                // Calcula o tamanho da requisição
+                int reqNumbOfSlots = currentRoute.getReqSize(callRequest.getSelectedBitRate());
+
+                // Verifica se é possível alocar a requisição
+                for (int indexSlot = firstIndexSlot; indexSlot < firstIndexSlot + reqNumbOfSlots; indexSlot++){
+                    if (indexSlot >= numberMaxSlotsPerLink){
+                        continue LOOP_ROUTE;
+                    }
+                    
+                    if (!currentRoute.isSlotAvailable(indexSlot)){
+                        continue LOOP_ROUTE;
+                    }
+                }
+
+                this.route = currentRoute;
+                this.fSlots = this.spectrumAlgorithm.findFrequencySlots(reqNumbOfSlots, currentRoute);
+                callRequest.setReqNumbOfSlots(reqNumbOfSlots);
+
+                break LOOP_SLOT;
+            }
+
+            firstIndexSlot++;
+        }
+    }
+
+
+    /**
+     * Método para realizar o roteamento por RSA. 
+     * 
+     * Esse algoritmo testa a primeira rota e tenta uma alocação no seu espectro usando o algoritmo selecionado. Caso não seja possível alocar na primeira rota, busca na próximas. 
+     * 
+     * @param source Origem 
+     * @param destination Destino
+     * @param callRequest Requisição
+     */
     private void findRoutingSA(int source, int destination, CallRequest callRequest) {
         // Captura as rotas para o par origem destino
         List<Route> routeSolution = this.routesManager.getRoutesForOD(source, destination);
@@ -95,16 +173,22 @@ public class RSAManager {
     }
 
 
-    private void routingSA(List<Route> routesOD, int reqNumbOfSlots, SpectrumAlgorithm spectrumAlgorithm){
-
-    }
-
+    /**
+     * Retorna a rota encontrada
+     * 
+     * @return
+     */
     public Route getRoute() {
         return this.route;
     }
 
+
+    /**
+     * O conjunto dos slots encontrado
+     * 
+     * @return O conjunto dos slots encontrado
+     */
     public List<Integer> getSlotsIndex() {
         return this.fSlots;
     }
-    
 }

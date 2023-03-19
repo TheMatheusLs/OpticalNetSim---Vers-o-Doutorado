@@ -57,4 +57,10 @@ public class GeneralTypes {
         Disabled,
         Enabled;
     }
+
+    public enum RSAOrderType{
+        Routing_SA,
+        SA_Routing,
+        Disable;
+    }
 }

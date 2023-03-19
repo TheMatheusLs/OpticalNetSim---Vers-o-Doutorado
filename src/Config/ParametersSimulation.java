@@ -5,6 +5,7 @@ import Types.GeneralTypes.CallRequestType;
 import Types.GeneralTypes.KSortedRoutesByType;
 import Types.GeneralTypes.LinkCostType;
 import Types.GeneralTypes.PhysicalLayerOption;
+import Types.GeneralTypes.RSAOrderType;
 import Types.GeneralTypes.RandomGenerationType;
 import Types.GeneralTypes.RoutingAlgorithmType;
 import Types.GeneralTypes.SpectralAllocationAlgorithmType;
@@ -45,6 +46,7 @@ public class ParametersSimulation{
      */
     
     // Configurações Gerais
+    final static RSAOrderType rsaOrderType = RSAOrderType.SA_Routing;
     final static PhysicalLayerOption physicalLayerOption = PhysicalLayerOption.Disabled;
     final static int[] trafficOption = new int[]{100, 200, 400};
     final static LinkCostType linkCostType = LinkCostType.Hops;
@@ -157,6 +159,10 @@ public class ParametersSimulation{
 
     public static StopCriteriaType getStopCriteriaType() {
         return stopCriteria; //TODO: Colocar no to string
+    }
+
+    public static RSAOrderType getRSAOrderType() {
+        return rsaOrderType; //TODO: Colocar no to string
     }
 
     public static String save() {

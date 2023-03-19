@@ -32,6 +32,13 @@ public class Route {
 
     private int kFindIndex;
 
+    /**
+     * Lista que armazena a ocupação dos slots em todos os links da rota.
+     */
+	private short[] slotOcupationLink;
+    private int numberOfSlotOcupation;
+    private List<Route> allConflictRoutes;
+
 
     public Route(List<Integer> path, TopologyManager topology) {
 
@@ -43,7 +50,11 @@ public class Route {
 
         // Cria o up e downlink
         this.upLink = new ArrayList<OpticalLink>();
-        this.downLink = new ArrayList<OpticalLink>(); 
+        this.downLink = new ArrayList<OpticalLink>();
+        
+        this.allConflictRoutes = new ArrayList<Route>();
+        this.slotOcupationLink = new short[ParametersSimulation.getNumberOfSlotsPerLink()];
+        this.numberOfSlotOcupation = 0;
 
         for (int iPath = 1; iPath < pathSize; iPath++){
             upLink.add(topology.getLink(this.path.get(iPath - 1), this.path.get(iPath)));
@@ -180,5 +191,57 @@ public class Route {
     public int getNumNodes() {
         return this.path.size();
     }
+
+    public short getSlotValue(int index){
+		return this.slotOcupationLink[index];
+	}
+
+    public boolean isSlotAvailable(int indexSlot) {
+
+        for (OpticalLink opticalLink: this.upLink){
+            if (!opticalLink.isAvailableSlotAt(indexSlot)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void incrementSlotsOcupy(List<Integer> fSlotsIndex) {
+
+        for (int s: fSlotsIndex){
+			this.incrementSlots(s);
+
+			for (Route route : this.allConflictRoutes){
+				route.incrementSlots(s);
+			}
+		}
+    }
+
+    private void incrementSlots(int slot) {
+        if (this.slotOcupationLink[slot] == 0){
+            this.numberOfSlotOcupation++;
+        }
+		this.slotOcupationLink[slot]++;
+    }
+
+
+    public void decreasesSlotsOcupy(List<Integer> fSlotsIndex){
+
+		for (int s: fSlotsIndex){
+			this.decreasesSlots(s);
+
+			for (Route route : this.allConflictRoutes){
+				route.decreasesSlots(s);
+			}
+		}
+	}
+
+    private void decreasesSlots(int slot){
+        this.slotOcupationLink[slot]--;
+        if (this.slotOcupationLink[slot] == 0){
+            this.numberOfSlotOcupation--;
+        }
+	}
 
 }

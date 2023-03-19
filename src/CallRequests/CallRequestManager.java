@@ -35,8 +35,7 @@ public class CallRequestManager {
 			if(time < acumulatedTime){
 
 				// Diminuir os slots que estão sendo usados
-                // TODO: Revisar esse trecho para melhor eficiência
-				//callRequest.getRoute().decreasesSlotsOcupy(callRequest.getFrequencySlots());
+				callRequest.getRoute().decreasesSlotsOcupy(callRequest.getFrequencySlots());
 
 				callRequest.desallocate();
 				iterator.remove();

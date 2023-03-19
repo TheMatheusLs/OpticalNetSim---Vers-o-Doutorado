@@ -54,7 +54,7 @@ public class Simulation {
         this.routesManager = new RoutesManager(this.topology);
         this.routesManager.save(folderManager);
 
-        this.rsaManager = new RSAManager(this.topology, this.routesManager);
+        this.rsaManager = new RSAManager(this.routesManager);
 
     }
 
@@ -197,6 +197,9 @@ public class Simulation {
                 if(hasSlots && hasQoT){
 					callRequest.setFrequencySlots(fSlotsIndex);
 					callRequest.setRoute(route);
+
+                    // Incrementar os slots que estão sendo utilizados pelas rotas
+					route.incrementSlotsOcupy(fSlotsIndex);
 
 					callRequest.allocate(topology.getListOfNodes());
 					listOfCalls.addCall(callRequest);
