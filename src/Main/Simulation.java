@@ -30,21 +30,29 @@ public class Simulation {
     private RoutesManager routesManager;
     private int[] seedsForLoad;
     private long currentRandomSeed;
-
     private Random randomGeneration;
-
     private TopologyManager topology;
-
     private RSAManager rsaManager;
 
-    public Simulation(FolderManager folderManager) {
+    /**
+     * Construtor da classe Simulation
+     * 
+     * @param folderManager
+     * @throws Exception
+     */
+    public Simulation(FolderManager folderManager) throws Exception {
         this.folderManager = folderManager;
         this.seedsForLoad = this.generateRandomSeeds();
 
         this.inicialize();
     }
 
-    public void inicialize() {
+    /**
+     * Método para inicializar a simulação
+     * 
+     * @throws Exception
+     */
+    public void inicialize() throws Exception {
 
         // Cria uma nova instância da topologia
         this.topology = new TopologyManager();
@@ -58,6 +66,11 @@ public class Simulation {
 
     }
 
+    /**
+     * Cria as sementes aleatórias da rede conforme a métrica escolhida
+     * 
+     * @return Lista com as sementes
+     */
     private int[] generateRandomSeeds() {
         
         int[] auxSeeds = new int[ParametersSimulation.getNumberOfSimulationsPerLoadNetwork()];
@@ -98,6 +111,11 @@ public class Simulation {
         return auxSeeds;
     }
 
+    /**
+     * Executa múltiplas simulações da rede
+     * 
+     * @throws Exception
+     */
     public void runMultiLoad() throws Exception {
 
         final int numberOfLoadNetworkPoints = ParametersSimulation.getNumberOfPointSloadNetwork();
@@ -139,6 +157,14 @@ public class Simulation {
         }
     }
 
+    /**
+     * Executa uma única simulação da rede
+     * 
+     * @param networkLoad Carga da rede
+     * @param simulationResults Classe para armazenar os resultados
+     * @return simulationResults
+     * @throws Exception
+     */
     private SimulationResults runSingleLoad(double networkLoad, SimulationResults simulationResults) throws Exception {
         final long geralInitTime = System.currentTimeMillis();
 
@@ -245,13 +271,17 @@ public class Simulation {
         return simulationResults;
     }
 
+    /**
+     * Método para verificar a topologia e rotas
+     * 
+     * @throws Exception
+     */
     private void checkTopologyAndRouting() throws Exception {
         // Verifica se todos os links estão limpos
 		this.topology.checkIfIsClean();
 
 		// Verifica se todas as rotas estão limpas
-        this.routesManager.checkIfIsClean();
-    }
-
-    
+        //FIXME: Constuir o código abaixo
+        //this.routesManager.checkIfIsClean();
+    } 
 }

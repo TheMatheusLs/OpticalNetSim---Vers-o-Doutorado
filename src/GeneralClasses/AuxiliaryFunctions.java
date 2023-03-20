@@ -24,6 +24,13 @@ public class AuxiliaryFunctions {
         return ((1.0 + 0.0) * Rbps) / (ParametersSimulation.getNumberofPolarizations() * value);
     }
 
+    /**
+     * Retorna o OpticalSwitch que corresponde ao ID
+     * 
+     * @param sourceNodeID
+     * @param listOfNodes
+     * @return
+     */
     public static OpticalSwitch getNodeByID(int sourceNodeID, OpticalSwitch[] listOfNodes) {
 
         OpticalSwitch optSwi = null;
@@ -38,5 +45,4 @@ public class AuxiliaryFunctions {
 
         return optSwi;
     }
-
 }

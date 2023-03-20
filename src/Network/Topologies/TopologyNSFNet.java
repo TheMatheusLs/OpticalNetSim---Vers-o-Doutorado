@@ -1,12 +1,20 @@
 package Network.Topologies;
 
 public class TopologyNSFNet extends TopologyGeneral{
+    /**
+     * Quantidade de Nós presentes na topologia
+     */
     private static int numberOfNodes = 14;
 
     public TopologyNSFNet(){
         super(getLength());
     }
 
+    /**
+	 * Tamanho dos links da rede NSFNet
+	 * 
+     * @return
+     */
     public static double[][] getLength(){
         //create network adjacency matrix
 		double[][] lengths = new double[numberOfNodes][numberOfNodes];			

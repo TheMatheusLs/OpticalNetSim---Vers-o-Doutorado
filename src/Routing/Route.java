@@ -12,10 +12,19 @@ import Types.GeneralTypes.CallRequestType;
 import Types.GeneralTypes.PhysicalLayerOption;
 
 public class Route {
-    private List<Integer> path;
-    private int originNone;
-    private int destinationNone;
 
+    /**
+     * Lista de inteiros com os ID dos nós das redes
+     */
+    private List<Integer> path;
+    /**
+     * ID do nó de origem da rota
+     */
+    private int originNone;
+    /**
+     * ID do nó de destino da rota
+     */
+    private int destinationNone;
     /**
      * Conjuntos de Links que ligam a origem ao destino;
      */
@@ -24,31 +33,51 @@ public class Route {
      * Conjuntos de Links que ligam o destino a origem;
      */
     private List<OpticalLink> downLink;
-
+    /**
+     * Lista com todas os posíveis tamanhos de requisição para cada valor de bitrate para a maior modulação possível nessa rota
+     */
     private int[] allReqSizes;
+    /**
+     * Lista com todas os posíveis valores de bitrate
+     */
     private int[] allBitrates;
-
+    /**
+     * Custo da Rota. A soma dos custos dos links conforme a métrica selecionada
+     */
     private double cost;
-
+    /**
+     * Índice que a rota foi encontrada pelo algoritmo YEN
+     */
     private int kFindIndex;
-
     /**
      * Lista que armazena a ocupação dos slots em todos os links da rota.
      */
 	private short[] slotOcupationLink;
+    /**
+     * Representa o valor para a quantidade de slots ocupados nos links da rota.
+     */
     private int numberOfSlotOcupation;
+    /**
+     * Lista que armazena o conjunto de rotas interferentes a rota principal
+     */
     private List<Route> allConflictRoutes;
 
-
+    /**
+     * Construtor da rota
+     * 
+     * @param path Lista com ID dos nós da rede
+     * @param topology Classe que armazena a topologia da rede
+     */
     public Route(List<Integer> path, TopologyManager topology) {
 
+        //Quantidade de nós no caminho da rede
         final int pathSize = path.size();
 
         this.path = path;
-        this.originNone = path.get(0);;
+        this.originNone = path.get(0);
         this.destinationNone = path.get(pathSize - 1);
 
-        // Cria o up e downlink
+        // Cria o uplink e downlink
         this.upLink = new ArrayList<OpticalLink>();
         this.downLink = new ArrayList<OpticalLink>();
         
@@ -75,14 +104,29 @@ public class Route {
         this.kFindIndex = -1;
     }
 
+    /**
+     * Configura o índice k encontrado pelo YEN
+     * 
+     * @param kFindIndex Índice da rota na ordem do YEN
+     */
     public void setKFindIndex(int kFindIndex) {
         this.kFindIndex = kFindIndex;
     }
 
+    /**
+     * Método para encontrar o número de enlaces da rede
+     * 
+     * @return Número de enlaces da rede
+     */
     private int getNumHops() {
         return this.path.size() - 1;
     }
 
+    /**
+     * Calcula e configura o custo da rede com base nos links que a compõem
+     * 
+     * @param topology Classe que armazena a configuração da rede
+     */
     private void setCost(TopologyManager topology) {
         OpticalLink link;
         double cost = 0.0;
@@ -95,9 +139,7 @@ public class Route {
         this.setCost(cost);
     }
 
-
     private void setCost(double cost) {
-        
         this.cost = cost;
     }
 
@@ -107,13 +149,15 @@ public class Route {
 
     /**
      * Calcula o tamanho da requisição que será usada para cada modulação e cada bitrate
+     * 
+     * @return Retorna uma lista com os tamanhos necessários para a requisição
      */
     private int[] findSizeReqForModulationAndBitrate() {
         
         ModulationLevelType[] allModulationLevels = ParametersSimulation.getMudulationLevelType();
         PhysicalLayerOption physicalLayerOption = ParametersSimulation.getPhysicalLayerOption();
 
-        int numberOfBitrates = allBitrates.length;   
+        int numberOfBitrates = this.allBitrates.length;   
 
         int[] allReqSizesAux = new int[numberOfBitrates];
 
@@ -122,7 +166,7 @@ public class Route {
             //Percorre todas modulações
             for (ModulationLevelType mLevelType: allModulationLevels){
 
-                int bitRate = allBitrates[indexBitrate];
+                int bitRate = this.allBitrates[indexBitrate];
 
                 if (physicalLayerOption.equals(PhysicalLayerOption.Disabled)){
                     allReqSizesAux[indexBitrate] = AuxiliaryFunctions.getNumberSlots(mLevelType, bitRate);
@@ -137,6 +181,12 @@ public class Route {
     }
 
 
+    /**
+     * Método para recuperar o tamanho da requisição com base no bitrare selecionado
+     * 
+     * @param bitrate Valor do bitrate
+     * @return Tamanho da requisição necessária
+     */
     public int getReqSize(int bitrate) {
 
         int index = 0;
@@ -153,36 +203,30 @@ public class Route {
         return upLink;
     }
 
-
     public void setUpLink(List<OpticalLink> upLink) {
         this.upLink = upLink;
     }
-
 
     public List<OpticalLink> getDownLink() {
         return downLink;
     }
 
-    
     public void setDownLink(List<OpticalLink> downLink) {
         this.downLink = downLink;
     }
-
 
     @Override
     public String toString() {
         return "Route [Source = " + originNone + " Destination = " + destinationNone +   " path = " + path + "]\n";
     }
 
-
     public boolean isQoT() {
-        return true; //TODO Equação do QoT
+        return true; //TODO: Equação do QoT
     }
 
     public List<Integer> getPath(){
         return this.path;
     }
-
 
     public int getNodeID(int index) {
         return this.path.get(index);
@@ -207,6 +251,11 @@ public class Route {
         return true;
     }
 
+    /**
+     * Incrementa a ocupação dos slots requisição. Somente funciona se o conjunto de rotas interferentes for gerado 
+     * 
+     * @param fSlotsIndex Conjunto de slots a ser alocado
+     */
     public void incrementSlotsOcupy(List<Integer> fSlotsIndex) {
 
         for (int s: fSlotsIndex){
@@ -218,6 +267,11 @@ public class Route {
 		}
     }
 
+    /**
+     * Incrementa a ocupação do slot. Somente funciona se o conjunto de rotas interferentes for gerado
+     * 
+     * @param slot Slot a ser alocadado
+     */
     private void incrementSlots(int slot) {
         if (this.slotOcupationLink[slot] == 0){
             this.numberOfSlotOcupation++;
@@ -225,7 +279,11 @@ public class Route {
 		this.slotOcupationLink[slot]++;
     }
 
-
+    /**
+     * Decrementa a ocupação dos slots requisição. Somente funciona se o conjunto de rotas interferentes for gerado 
+     * 
+     * @param fSlotsIndex Conjunto de slots a ser alocado
+     */
     public void decreasesSlotsOcupy(List<Integer> fSlotsIndex){
 
 		for (int s: fSlotsIndex){
@@ -237,6 +295,11 @@ public class Route {
 		}
 	}
 
+    /**
+     * Decrementa a ocupação do slot. Somente funciona se o conjunto de rotas interferentes for gerado
+     * 
+     * @param slot Slot a ser alocadado
+     */
     private void decreasesSlots(int slot){
         this.slotOcupationLink[slot]--;
         if (this.slotOcupationLink[slot] == 0){

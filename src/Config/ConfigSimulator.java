@@ -115,7 +115,7 @@ public class ConfigSimulator {
 		return SPACING;
 	}
 
-  public static double getMeanRateOfCallsDuration() {
-		return MEAN_RATE;
-	}
+    public static double getMeanRateOfCallsDuration() {
+        return MEAN_RATE;
+    }
 }

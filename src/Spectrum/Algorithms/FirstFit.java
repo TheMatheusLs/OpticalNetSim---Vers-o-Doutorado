@@ -12,25 +12,28 @@ public class FirstFit extends SpectrumAlgorithm{
     public FirstFit(){
     }
 
-
+    /**
+     * Método para encontrar o primeiro conjunto de slots disponível no espectro pra a rota. Algoritmo First-Fit
+     * 
+     * @param reqNumbOfSlots
+	 * @param route
+	 * @return O cojunto de índice dos slots em um lista de inteiros
+     * @author André 
+     */
     @Override
-    public List<Integer> findFrequencySlots(final int reqNumbOfSlots, final Route route){
+    public List<Integer> findFrequencySlots(final int reqNumbOfSlots, final Route route) throws Exception{
 
         List<OpticalLink> uplink = route.getUpLink();
         List<OpticalLink> downlink = route.getUpLink();
 
         int numberMaxFreqSlots = ParametersSimulation.getNumberOfSlotsPerLink();
 
-        try {
-            if(reqNumbOfSlots <= 0){
-                throw new Exception("Required number of frequency slots is invalid");
-            } else if (uplink.isEmpty()){
-                throw new Exception("Routing solution is invalid");         
-            }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } 
+        if(reqNumbOfSlots <= 0){
+            throw new Exception("Required number of frequency slots is invalid");
+        } else if (uplink.isEmpty()){
+            throw new Exception("Routing solution is invalid");         
+        }
+       
 
         final boolean bidirectional = !uplink.isEmpty() && !downlink.isEmpty();
 
@@ -106,7 +109,5 @@ public class FirstFit extends SpectrumAlgorithm{
         }
 
         return slots;
-
     }
-
 }

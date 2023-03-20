@@ -7,11 +7,12 @@ import java.util.List;
 import Network.TopologyManager;
 import Network.Structure.OpticalLink;
 import Routing.Route;
-import Types.GeneralTypes.CallRequestType;
-import Config.ParametersSimulation;
 
 public class Dijkstra extends RoutingAlgorithm{
 
+    /**
+     * Construtor da Classe
+     */
     public Dijkstra(){
         
     }
@@ -22,7 +23,14 @@ public class Dijkstra extends RoutingAlgorithm{
         return routes.get(0);
     }
 
-
+    /**
+     * Método Dijkstra para encontrar a melhor rota para a topologia para um determinado para origem destino
+     * 
+     * @param orNode ID do nó de origem 
+     * @param deNode ID do nó de destino
+     * @param topology Classe que controla a topologia
+     * @return rota encontrada
+     */
     public static Route findRoute(int orNode, int deNode, TopologyManager topology) {
         
         int k = -1, h, hops;

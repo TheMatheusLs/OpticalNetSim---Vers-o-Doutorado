@@ -5,7 +5,6 @@ import java.util.List;
 
 import CallRequests.CallRequest;
 import Config.ParametersSimulation;
-import Network.TopologyManager;
 import Routing.Route;
 import Routing.RoutesManager;
 import Spectrum.Algorithms.FirstFit;
@@ -68,8 +67,9 @@ public class RSAManager {
      * @param source Origem 
      * @param destination Destino
      * @param callRequest Requisição
+     * @throws Exception
      */
-    public void findRouteAndSlots(int source, int destination, CallRequest callRequest) {
+    public void findRouteAndSlots(int source, int destination, CallRequest callRequest) throws Exception {
         
         if (this.rsaOrderType == RSAOrderType.Disable){
             
@@ -92,8 +92,9 @@ public class RSAManager {
      * @param source Origem 
      * @param destination Destino
      * @param callRequest Requisição
+     * @throws Exception
      */
-    private void findSARouting(int source, int destination, CallRequest callRequest) {
+    private void findSARouting(int source, int destination, CallRequest callRequest) throws Exception {
         
         final int numberMaxSlotsPerLink = ParametersSimulation.getNumberOfSlotsPerLink();
 
@@ -133,7 +134,6 @@ public class RSAManager {
         }
     }
 
-
     /**
      * Método para realizar o roteamento por RSA. 
      * 
@@ -142,8 +142,9 @@ public class RSAManager {
      * @param source Origem 
      * @param destination Destino
      * @param callRequest Requisição
+     * @throws Exception
      */
-    private void findRoutingSA(int source, int destination, CallRequest callRequest) {
+    private void findRoutingSA(int source, int destination, CallRequest callRequest) throws Exception {
         // Captura as rotas para o par origem destino
         List<Route> routeSolution = this.routesManager.getRoutesForOD(source, destination);
 
@@ -172,19 +173,17 @@ public class RSAManager {
         }
     }
 
-
     /**
-     * Retorna a rota encontrada
+     * Método para retornar a rota encontrada após utilizar o algoritmo de roteamento.
      * 
-     * @return
+     * @return Retorna a rota encontrada
      */
     public Route getRoute() {
         return this.route;
     }
 
-
     /**
-     * O conjunto dos slots encontrado
+     * Método para retornar o conjunto dos slots encontrado
      * 
      * @return O conjunto dos slots encontrado
      */

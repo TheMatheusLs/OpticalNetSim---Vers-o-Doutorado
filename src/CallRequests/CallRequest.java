@@ -32,7 +32,6 @@ public class CallRequest {
     private int destinationNodeID;
     private int reqNumbOfSlots;
 
-    
     public CallRequest(final int callRequestId, final int sourceNodeID, final int destinationNodeID, final CallRequestType callRequestType, final int[] possibleBitRates, final double time, final double meanDurationRate, Random randomGeneration){
         this.callRequestID = callRequestId;
         this.sourceNodeID = sourceNodeID;
@@ -74,7 +73,6 @@ public class CallRequest {
     public int getSelectedBitRate(){
         return selectedBitRate;
     }
-
 
     /**
      * Método para configurar o tempo de duração e queda da requisição de chamada.

@@ -1,8 +1,8 @@
 package Types;
 /**
- * Descreve os tipos de formato de modula��o 
+ * Descreve os tipos de formato de modulação 
  * considerados no simulador.
- * @author Andr� 
+ * @author André 
  */
 public enum ModulationLevelType {
 	
@@ -13,23 +13,23 @@ public enum ModulationLevelType {
 	FOUR_QAM(5, "4-QAM", 6.8, 4);
 	
 	/**
-	 * C�digo do formato de modula��o.
+	 * Código do formato de modulação.
 	 * @author Andr� 			
 	 */		
 	private int code;
 	/**
-	 * SNR por bit do formato de modula��o.
-	 * @author Andr� 			
+	 * SNR por bit do formato de modulação.
+	 * @author André 			
 	 */	
 	private double snrIndB;
 	/**
-	 * Descri��o do formato de modula��o.
-	 * @author Andr� 			
+	 * Descrição do formato de modulação.
+	 * @author André 			
 	 */	
 	private String description;
 	/**
-	 * Constela��o do formato de modula��o.
-	 * @author Andr� 			
+	 * Constelação do formato de modulação.
+	 * @author André 			
 	 */		
 	private int constelation;
 	/**
@@ -37,7 +37,7 @@ public enum ModulationLevelType {
 	 * @param code
 	 * @param description
 	 * @param constelation
-	 * @author Andr�
+	 * @author André
 	 */		
 	private ModulationLevelType(final int code, final String description, final double snrIndB, final int constelation){
 		this.code = code;
@@ -46,37 +46,33 @@ public enum ModulationLevelType {
 		this.constelation = constelation;
 	}
 	/**
-	 * M�todo para retornar o c�digo do tipo de formato de
-	 * modula��o.
+	 * M�todo para retornar o c�digo do tipo de formato de modulação
 	 * @return code
-	 * @author Andr� 			
+	 * @author André 			
 	 */
 	public int getCode() {
 		return this.code;
 	}
 	/**
-	 * M�todo para retornar a descri��o do tipo de formato de
-	 * modula��o.
+	 * M�todo para retornar a descri��o do tipo de formato de modulação
 	 * @return description
-	 * @author Andr� 			
+	 * @author André 			
 	 */
 	public String getDescription() {
 		return this.description;
 	}
 	/**
-	 * M�todo para retornar a SNR por bit do formato de
-	 * modula��o.
+	 * Método para retornar a SNR por bit do formato de modulação.
 	 * @return snrIndB
-	 * @author Andr� 			
+	 * @author André 			
 	 */	
 	public double getSNRIndB() {
 		return this.snrIndB;
 	}
 	/**
-	 * M�todo para retornar a constela��o do formato de
-	 * modula��o.
+	 * Método para retornar a constela��o do formato de modulação
 	 * @return constelation
-	 * @author Andr� 			
+	 * @author André 			
 	 */		
 	public int getConstelation() {
 		return this.constelation;

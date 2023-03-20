@@ -69,6 +69,7 @@ public class ParametersSimulation{
     // Pasta onde serão armazenadas os relatórios da simulação. Em caso da utilização no sistema linux é necessário aterar a classe CreateFolder.java
     final static String pathToSaveResults = "D:\\ProgrammingFiles\\ReportsOpticalNetSim\\"; 
 
+    
     public static double getMinLoadNetwork() {
         return minLoadNetwork;
     }
@@ -168,39 +169,50 @@ public class ParametersSimulation{
     public static String save() {
 
         String txt = "\t*** Parameters *** \n";
-
+        
+        txt += String.format("mainSeed = %d\n", mainSeed);
+        
         txt += String.format("minLoadNetwork = %f\n", minLoadNetwork);
         txt += String.format("maxLoadNetwork = %f\n", maxLoadNetwork);
         txt += String.format("numberOfPointsLoadNetwork = %d\n", numberOfPointsLoadNetwork);
         txt += String.format("numberOfSimulationsPerLoadNetwork = %d\n", numberOfSimulationsPerLoadNetwork);
 
+        txt += String.format("topologyType = %s\n", topologyType.name());
         txt += String.format("numberOfSlotsPerLink = %d\n", numberOfSlotsPerLink);
 
         txt += String.format("maxNumberOfRequisitions = %d\n", maxNumberOfRequisitions);
         txt += String.format("maxNumberOfBlockedRequests = %d\n", maxNumberOfBlockedRequests);
-
-        txt += String.format("kShortestRoutes = %d\n", kShortestRoutes);
-
-        txt += String.format("numberOfPolarizations = %d\n", numberOfPolarizations);
-        txt += String.format("guardBandSize = %d\n", guardBandSize);
         
-        txt += String.format("mainSeed = %d\n", mainSeed);
-
-        txt += String.format("topologyType = %s\n", topologyType.name());
         txt += String.format("routingAlgorithmType = %s\n", routingAlgorithmType.name());
+        txt += String.format("kShortestRoutes = %d\n", kShortestRoutes);
+        txt += String.format("kSortedRoutesByType = %s\n", kSortedRoutesByType.name());
+        
         txt += String.format("spectralAllocationAlgorithmType = %s\n", spectralAllocationAlgorithmType.name());
-        txt += String.format("linkCostType = %s\n", linkCostType.name());
-
-        txt += String.format("stopCriteria = %s\n", stopCriteria.name());
-        txt += String.format("randomGeneration = %s\n", randomGeneration.name());
-
-        txt += String.format("callRequestType = %s\n", callRequestType.name());
-
-        txt += "trafficOption = ";
+        
+        txt += String.format("rsaOrderType = %s\n", rsaOrderType.name());
+        txt += String.format("physicalLayerOption = %s\n", physicalLayerOption.name());
+        
+        txt += "trafficOption = [";
         for (int t = 0; t < trafficOption.length - 1; t++){
             txt += String.format("%d, ", trafficOption[t]);
         }
-        txt += String.format("%d", trafficOption[trafficOption.length-1]);
+        txt += String.format("%d]\n", trafficOption[trafficOption.length-1]);
+
+        txt += String.format("linkCostType = %s\n", linkCostType.name());
+        txt += String.format("callRequestType = %s\n", callRequestType.name());
+        txt += String.format("numberOfPolarizations = %d\n", numberOfPolarizations);
+        txt += String.format("guardBandSize = %d\n", guardBandSize);
+
+        txt += String.format("randomGeneration = %s\n", randomGeneration.name());
+        txt += String.format("stopCriteria = %s\n", stopCriteria.name());
+        
+        txt += "mudulationLevelType = [";
+        for (int t = 0; t < mudulationLevelType.length - 1; t++){
+            txt += String.format("%d, ", mudulationLevelType[t].getConstelation());
+        }
+        txt += String.format("%d]\n", mudulationLevelType[mudulationLevelType.length-1].getConstelation());
+        
+        txt += String.format("pathToSaveResults = %s\n", pathToSaveResults);
 
         return txt;
     }

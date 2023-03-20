@@ -13,7 +13,6 @@ public class CallRequestManager {
     private transient int numbOfEstCallReq;
     private transient List<CallRequest> callReqList;
 
-
     public CallRequestManager() {		
 		this.callReqList = new ArrayList<CallRequest>();
 		this.numbOfEstCallReq = 0;
@@ -53,7 +52,6 @@ public class CallRequestManager {
 		this.numbOfEstCallReq++;		 
 	}
 
-	
     public void desallocateAllRequests(){
 		removeCallRequest(Double.MAX_VALUE);
 	}

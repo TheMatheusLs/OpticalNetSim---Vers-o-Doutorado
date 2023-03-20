@@ -1,16 +1,31 @@
 package Network.Structure;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class OpticalSpan {
     
+    /**
+     * ID do span
+     */
     private int spanID;
+    /**
+     * Fibra óptica
+     */
     private OpticalFiber opticalFiber;
+    /**
+     * Amplificado óptico
+     */
     private OpticalAmplifier opticalAmplifier;
+    /**
+     * Número de slots
+     */
     private int numberOfSlots;
-    private double totalPower;      //Potência total na entrada do amplificador.
-    private double[] powers;   // Lista de potências de cada slot de frequencia.
+    /**
+     * Potência total na entrada do amplificador.
+     */
+    private double totalPower;
+    /**
+     * Lista de potências de cada slot de frequencia.
+     */
+    private double[] powers;   
     
     public OpticalSpan(final int spanID, final int numberOfSlots, final OpticalFiber opticalFiber, final OpticalAmplifier opticalAmplifier) {
         this.spanID = spanID;
@@ -20,7 +35,6 @@ public class OpticalSpan {
 
         this.inicializePowersInSpan(numberOfSlots);
     }
-
 
     /**
      * Método para inicializar a lista de potência da fibra óptica do Span.
@@ -35,7 +49,6 @@ public class OpticalSpan {
     	this.totalPower = 0.0;
     }
 
-
     /**
      * Método para remover a potência de um determinado slot da fibra.
      * 
@@ -46,7 +59,6 @@ public class OpticalSpan {
 		this.powers[slot] = 0.0;
     }
 
-
     /**
      * Método para remover a potência de um determinado slot na potência total da fibra do Span.
      * 
@@ -56,16 +68,13 @@ public class OpticalSpan {
 		this.totalPower -= this.powers[slot];
 	}
 
-
     public int getSpanID() {
         return this.spanID;
     }
 
-
     public void setSpanID(int spanID) {
         this.spanID = spanID;
     }
-
 
     public OpticalAmplifier getOpticalAmplifier() {
 		return this.opticalAmplifier;

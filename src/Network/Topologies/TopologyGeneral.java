@@ -11,11 +11,25 @@ public class TopologyGeneral {
 	 * Instância do algoritmo de configuração de ganho dos amplificadores
 	 */
 	private final transient GainAlgorithm gainAlgorithm = GainAlgorithm.getGainInstance();
-    
+    /**
+     * Matriz com os tamanhos dos links da rede
+     */
     private double[][] lengthsTopology;
+    /**
+     * Número de nós para a rede
+     */
     private int numberOfNodes;
+    /**
+     * Tamanho do maior link da rede
+     */
     private double maxLength;
-    private OpticalLink[][] linksAdjacencyMatrix; // Matriz de adjacência da rede
+    /**
+     * Matriz de adjacência com todos os links ópticos da rede
+     */
+    private OpticalLink[][] linksAdjacencyMatrix;
+    /**
+     * Lista com todos os nó ópticos da rede
+     */
     private OpticalSwitch[] opticalNodes;
 
     public TopologyGeneral(double[][] lengthsTopology) {
@@ -30,7 +44,7 @@ public class TopologyGeneral {
      * Método para construit a matriz de adjacência da rede.
      */
     private void buildNetworkAdjacencyMatrix() {
-		
+		//TODO: Verificar se todos os links existem
 		double length = 0.0;
 		int linkId = 0;
 		int srlgId = 0;
@@ -70,6 +84,9 @@ public class TopologyGeneral {
 		}			
 	}
 
+    /**
+     * Constroe e configura os nós da ree
+     */
     private void buildNodes(){		
 
 		final double switchLoss = ConfigSimulator.getSwitchLoss();
@@ -93,15 +110,12 @@ public class TopologyGeneral {
 	}
 
     public OpticalSwitch[] getListOfNodes() {
-		
 		return this.opticalNodes;
 	}
-
 
 	public double getMaxLength(){
 		return this.maxLength;
 	}
-
 
 	public int getNumberOfNodes(){
 		return this.numberOfNodes;

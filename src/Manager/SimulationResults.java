@@ -5,16 +5,46 @@ package Manager;
  */
 public class SimulationResults {
     
+    /**
+     * Carga da rede em Erlangs
+     */
     private double networkLoad;
+    /**
+     * Número da simulação
+     */
     private int nSim;
+    /**
+     * Probabilidade de bloqueio 
+     */
     private double probabilityBlocking;
+    /**
+     * Tempo de execução da simulação
+     */
     private double executionTime;
+    /**
+     * Número de ciclos MSCL da simulação
+     */
     private double MSCLCycle;
+    /**
+     * Seed da simulação
+     */
     private long currentRandomSeed;
-
+    /**
+     * Número de slots bloqueados por falta de slots
+     */
     private long numBlockBySlots;
+    /**
+     * Número de slots bloqueados por falta de QoT
+     */
     private long numBlockByQoT;
 
+    /**
+     * Construtor da classe
+     * 
+     * @param networkLoad
+     * @param nSim
+     * @param currentRandomSeed
+     */
     public SimulationResults(double networkLoad, int nSim, long currentRandomSeed) {
         this.networkLoad = networkLoad;
         this.nSim = nSim;
@@ -25,56 +55,45 @@ public class SimulationResults {
         return networkLoad;
     }
 
-
     public void setNetworkLoad(double networkLoad) {
         this.networkLoad = networkLoad;
     }
-
 
     public int getnSim() {
         return nSim;
     }
 
-
     public void setnSim(int nSim) {
         this.nSim = nSim;
     }
-
 
     public double getProbabilityBlocking() {
         return probabilityBlocking;
     }
 
-
     public void setProbabilityBlocking(double probabilityBlocking) {
         this.probabilityBlocking = probabilityBlocking;
     }
-
 
     public double getExecutionTime() {
         return executionTime;
     }
 
-
     public void setExecutionTime(double executionTime) {
         this.executionTime = executionTime;
     }
-
 
     public double getMSCLCycle() {
         return MSCLCycle;
     }
 
-
     public void setMSCLCycle(double mSCLCycle) {
         MSCLCycle = mSCLCycle;
     }
 
-
     public long getCurrentRandomSeed() {
         return currentRandomSeed;
     }
-
 
     public void setCurrentRandomSeed(long currentRandomSeed) {
         this.currentRandomSeed = currentRandomSeed;

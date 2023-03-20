@@ -26,16 +26,19 @@ public class GeneralTypes {
         Random;
     }
 
+
     public enum LinkCostType{
         Hops,
         Length,
         LengthNormalized;
     }
 
+
     public enum StopCriteriaType{
         TotalCallRequest,
         BlockedCallRequest;
     }
+
 
     public enum RandomGenerationType{
         SameRequestForAllPoints,
@@ -43,9 +46,11 @@ public class GeneralTypes {
         RandomGeneration;
     }
 
+
     public enum GainAlgorithmType{
         Basic;
     }
+
 
     public enum KSortedRoutesByType{
         MaxToMinOcupation,
@@ -53,11 +58,13 @@ public class GeneralTypes {
         None;
     }
 
+
     public enum PhysicalLayerOption{
         Disabled,
         Enabled;
     }
 
+    
     public enum RSAOrderType{
         Routing_SA,
         SA_Routing,

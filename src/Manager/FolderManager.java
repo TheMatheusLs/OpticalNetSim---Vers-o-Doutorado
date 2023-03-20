@@ -2,6 +2,7 @@ package Manager;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -12,7 +13,6 @@ public class FolderManager {
     private String folderName;
     private String folderPath;
     private boolean status;
-
 
     /**
      * Classe para gerenciar o acesso a pasta de relatórios
@@ -43,7 +43,6 @@ public class FolderManager {
         this.writeParameters();
     }
 
-
     /**
      * Método para salvar o conteúdo do arquivo.
      * 
@@ -51,13 +50,15 @@ public class FolderManager {
      * @param content
      */
     private void writeFile(String fileName, String content) {
+        
+        File file = new File(this.folderPath + "/" + fileName);
         try {
-            File file = new File(this.folderPath + "/" + fileName);
             file.createNewFile();
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(content);
             fileWriter.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -68,26 +69,18 @@ public class FolderManager {
      * @param totalTime Tempo de execução
      */
     public void writeDone(double totalTime) {
-        try {
 
-            String content = "Simulação finalizada com sucesso!\n" +
-            "Tempo total de execução: " + totalTime + " milissegundos\n";
+        String content = "Simulação finalizada com sucesso!\n" +
+        "Tempo total de execução: " + totalTime + " milissegundos\n";
 
-            this.writeFile("done.txt", content);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.writeFile("done.txt", content);
     }
 
     /**
      *  Salva os paramétros dessa simulação
      */
     private void writeParameters() {
-        try {
-            this.writeFile("Parameters.txt", ParametersSimulation.save());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.writeFile("Parameters.txt", ParametersSimulation.save());
     }
 
     /**
@@ -96,11 +89,7 @@ public class FolderManager {
      * @param content
      */
     public void writeTopology(String content) {
-        try {
-            this.writeFile("Topology.txt", content);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.writeFile("Topology.txt", content);
     }
 
     /**
@@ -109,11 +98,7 @@ public class FolderManager {
      * @param content
      */
     public void writeRoutes(String content) {
-        try {
-            this.writeFile("Routes.txt", content);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.writeFile("Routes.txt", content); 
     }
 
     /**
@@ -122,26 +107,16 @@ public class FolderManager {
      * @param content
      */
     public void writeResults(String content) {
-        try {
-
-            //TODO
-
-
-            this.writeFile("Results.txt", content);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.writeFile("Results.txt", content);
     }
 
     public boolean isStatus() {
         return status;
     }
 
-
     public String getFolderName() {
         return folderName;
     }
-
 
     public String getFolderPath() {
         return folderPath;

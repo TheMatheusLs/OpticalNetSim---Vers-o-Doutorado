@@ -8,24 +8,74 @@ import Config.ParametersSimulation;
 
 public class OpticalLink {
     
+    /**
+     * ID do Link
+     */
     private int opticalLinkID;
+    /**
+     * Tamanho do Link
+     */
     private double length;
+    /**
+     *
+     */
     private int srlg;
+    /**
+     * ID do nó de origem
+     */
     private int sourceNode;
+    /**
+     * ID do nó de destino
+     */
     private int destinationNode;
+    /**
+     * Anplificado do link
+     */
     private OpticalAmplifier booster;
+    /**
+     * Lista de spans para o link
+     */
     private List<OpticalSpan> spans;
-
+    /**
+     * Custo do link com base na métrica escolhida
+     */
     private double cost;
+    /**
+     * Lista de força em A
+     */
     private double[]  powersA;
+    /**
+     * Potência total em A
+     */
     private double  totalPowerInA;
+    /**
+     * Lista de força em B
+     */
     private double[]  powersB;
+    /**
+     * Potência total em B
+     */
     private double  totalPowerInB;
+    /**
+     * Lista de frequência no espectro
+     */
     private double[] frequencies;
-
+    /**
+     * Estado no link
+     */
     private boolean linkState;
 
     
+    /**
+     * Construtor da classe OpticalLink
+     * 
+     * @param opticalLinkID
+     * @param sourceNode
+     * @param destinationNode
+     * @param srlg
+     * @param length
+     * @throws Exception
+     */
     public OpticalLink(final int opticalLinkID, final int sourceNode, final int destinationNode, final int srlg, final double length) throws Exception {
         this.opticalLinkID = opticalLinkID;
         this.sourceNode = sourceNode;
@@ -46,7 +96,6 @@ public class OpticalLink {
         this.linkState = true;
     }
     
-
     /**
      * Método para iniciar a força e as frequências no link óptico
      */
@@ -68,7 +117,13 @@ public class OpticalLink {
     	this.totalPowerInB = 0.0;
     }
 
-
+    /**
+     * Método para configurar os spans no link
+     * 
+     * @param length
+     * @return Uma lista com os span ópticos
+     * @throws Exception
+     */
     private List<OpticalSpan> configureSpansInLink(final double length) throws Exception {
 		
 		final double spanSize = ConfigSimulator.getSpanSize();
@@ -86,6 +141,12 @@ public class OpticalLink {
 		return spans;
 	}
 
+    /**
+     * Método para verificar se o espectro está disponível no slot
+     * 
+     * @param slot slot
+     * @return true se o espectro está disponível no slot, false caso o contrário
+     */
     public boolean isAvailableSlotAt(final int slot){
     	return this.powersA[slot] == 0.0;
     }
@@ -118,7 +179,6 @@ public class OpticalLink {
 		this.totalPowerInB -= this.powersB[slot];
 	}
 
-
     public List<OpticalSpan> getSpans() {
 		return spans;
 	}
@@ -141,11 +201,9 @@ public class OpticalLink {
         return spans.get(spanIndex);
     }
 
-
     public void setCost(double cost){
         this.cost = cost;
     }
-
 
     @Override
 	public String toString() {
@@ -176,10 +234,10 @@ public class OpticalLink {
     }
 
     /**
-	 * M�todo para configurar a pot�ncia do slot no optical link.
+	 * Método para configurar a potência do slot no optical link.
 	 * @param slot
 	 * @param initialPower
-	 * @author Andr� 			
+	 * @author André 			
 	 */	
 	public void allocate(final int slot, final double initialPower){		
 		
@@ -206,10 +264,10 @@ public class OpticalLink {
 	}
 
     /**
-	 * M�todo para configurar a pot�ncia do slot antes do booster no optical link.
+	 * Método para configurar a potência do slot antes do booster no optical link.
 	 * @param powerValue
 	 * @param slot
-	 * @author Andr� 			
+	 * @author André 			
 	 */	
 	private void setPowerA(final double powerValue, final int slot){
 		this.totalPowerInA -= this.powersA[slot];
@@ -217,6 +275,12 @@ public class OpticalLink {
 		this.powersA[slot] = powerValue;
 	}
 
+    /**
+     * Método para configurar a potência do slot depois do booster no optical link.
+     * 
+     * @param powerValue Potência 
+     * @param slot Slot
+     */
     private void setPowerB(final double powerValue, final int slot){
 		this.totalPowerInB -= this.powersB[slot];
 		this.totalPowerInB += powerValue;
@@ -244,7 +308,6 @@ public class OpticalLink {
 	public double getPowerB(final int slot){
 		return this.powersB[slot];
 	}
-
 
     public void setLinkState(Boolean linkState) {
         this.linkState = linkState;

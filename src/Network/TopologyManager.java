@@ -12,33 +12,48 @@ import Types.GeneralTypes.LinkCostType;
 import Types.GeneralTypes.TopologyType;
 
 public class TopologyManager {
+    /**
+     * Lista com todos os OpticalSwicths da rede. Os nós
+     */
     private OpticalSwitch[] listOfNodes;
+    /**
+     * Matriz com todos os OpticalLinks da rede.
+     */
     private OpticalLink[][] networkOpticalLinks;
+    /**
+     * Número de nós das redes
+     */
     private int numberOfNodes;
+    /**
+     * Tamanho do maior link da rede
+     */
     private double maxLinkLength;
-    private double[][] linksLengths;
 
-    public TopologyManager() {
-  
+    /**
+     * Construtor da classe TopologyManager
+     * @throws Exception
+     */
+    public TopologyManager() throws Exception {
+        
         this.inicialize();
 
         // Imprime na tela a topologia usada
         System.out.println(this);
     }
 
-    public void inicialize() {
+    /**
+     * Método para inicializar a topologia da rede
+     * 
+     * @throws Exception
+     */
+    public void inicialize() throws Exception {
 
         TopologyGeneral NetworkTopologyInstance = null;
 
         if (ParametersSimulation.getTopologyType().equals(TopologyType.NSFNet)){
             NetworkTopologyInstance = new TopologyNSFNet();
         } else {
-            try {
-                throw new Exception("Topologia inválida!");
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }            
+            throw new Exception("Topologia inválida!");            
         }
 
         this.networkOpticalLinks = NetworkTopologyInstance.getNetworkAdjacencyMatrix();
@@ -47,14 +62,9 @@ public class TopologyManager {
         this.maxLinkLength = NetworkTopologyInstance.getMaxLength();
         this.numberOfNodes = NetworkTopologyInstance.getNumberOfNodes();
         
-        try {
-            this.setLinksInitCost();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.setLinksInitCost();
 
         this.setNodesNeighbors();
-
     }
 
     /*
@@ -80,7 +90,6 @@ public class TopologyManager {
                 node1.addNeighborNode(node2);
             }
         }
-
     }
     
     /*
@@ -124,6 +133,13 @@ public class TopologyManager {
         }
     }
 
+    /**
+     * Método para retornar o OpticalLink
+     * 
+     * @param indexSource 
+     * @param indexDestination
+     * @return
+     */
     public OpticalLink getOpticalLink(int indexSource, int indexDestination) {
         return this.networkOpticalLinks[indexSource][indexDestination];
     }
@@ -151,6 +167,11 @@ public class TopologyManager {
         return txt;
     }
 
+    /**
+     * Método para salvar a topologia em um arquivo de texto
+     * 
+     * @param folderManager
+     */
     public void save(FolderManager folderManager) {
         folderManager.writeTopology((String.valueOf(this)));
     }
@@ -172,6 +193,11 @@ public class TopologyManager {
         return this.listOfNodes;
     }
 
+    /**
+     * Verifica se todos os links da rede foram limpos corretamente.
+     * 
+     * @throws Exception
+     */
     public void checkIfIsClean() throws Exception {
         for (int s = 0; s < networkOpticalLinks.length;s++){
 			for (int d = 0; d < networkOpticalLinks.length;d++){
@@ -186,17 +212,23 @@ public class TopologyManager {
 		}
     }
 
-
+    /**
+     * Restaura o estado dos links para a lista de links informada
+     * 
+     * @param removedEdges Lista de links para serem restauradas
+     */
     public void restoreEdges(List<OpticalLink> removedEdges) {
-
         for (OpticalLink link : removedEdges){
             link.setLinkState(true);
         }
     }
 
-
+    /**
+     * Restaura o estado dos OpticalSwichts 
+     * 
+     * @param rootRoutePath
+     */
     public void restoreNodes(List<Integer> rootRoutePath) {
-
         for (int oSwitchID: rootRoutePath){
             OpticalSwitch opticalSwitch = this.getNode(oSwitchID);
             opticalSwitch.setNodeState(true);

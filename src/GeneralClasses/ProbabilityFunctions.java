@@ -17,5 +17,4 @@ public class ProbabilityFunctions {
     public static double exponentialDistribution(double networkLoad, Random rand) {
         return - Math.log(1 - rand.nextDouble())  / networkLoad;
     }
-
 }

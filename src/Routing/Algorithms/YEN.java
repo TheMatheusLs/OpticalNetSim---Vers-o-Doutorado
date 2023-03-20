@@ -2,8 +2,6 @@ package Routing.Algorithms;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
-
 import Network.TopologyManager;
 import Network.Structure.OpticalLink;
 import Network.Structure.OpticalSwitch;
@@ -12,14 +10,27 @@ import Routing.Route;
 public class YEN extends RoutingAlgorithm{
     
 
+    /**
+     * Construtor da classe YEN
+     */
     public YEN(){
         
     }
 
+    /**
+     * Método YEN para encontrar o melhor conjunto de K rotas para a topologia para um determinado para origem destino
+     * 
+     * @param orNode ID do nó de origem 
+     * @param deNode ID do nó de destino
+     * @param topology Classe que controla a topologia
+     * @param K Tamanho do conjunto a ser buscado
+     * @return Lista com a rotas encontradas
+     */
     public static List<Route> findRoute(int orNode, int deNode, TopologyManager topology, final int K) {
     
         // Lista A contém os caminhos já encontrados
         List<Route> routesYEN = new ArrayList<>();
+        int kValue = 1;
         // Fila B contém os caminhos candidatos
         List<Route> candidateRoutes = new ArrayList<>();
         
@@ -92,17 +103,24 @@ public class YEN extends RoutingAlgorithm{
             // Sorteia as potenciais rotas pelo custo
             Route newPath = YEN.sortRoutesByCost(candidateRoutes);
             
+            newPath.setKFindIndex(kValue);
+            kValue++;
             routesYEN.add(newPath); 
 
             candidateRoutes.remove(newPath);
 
         }
 
-        return routesYEN;
-        
+        return routesYEN; 
     }
 
-
+    /**
+     * Método para verificar se a rota totalRoute esta contida no conjunto candidateRoutes
+     * 
+     * @param totalRoute Rota
+     * @param candidateRoutes Conjunto para verificar
+     * @return True se a rota totalRoute esta contida no conjunto candidateRoutes, e false caso contrario
+     */
     private static boolean isRouteIn(Route totalRoute, List<Route> candidateRoutes) {
 
         GOTO: for (Route route : candidateRoutes) {
@@ -126,6 +144,12 @@ public class YEN extends RoutingAlgorithm{
         return false;
     }
 
+    /**
+     * Método para ordenar a rota de acordo com o menor custo das rotas e retornar a melhor rota com base no custo
+     * 
+     * @param candidateRoutes Conjunto de rotas canditadas a ser ordenada
+     * @return Retorna a melhor rota com base no custo
+     */
     private static Route sortRoutesByCost(final List<Route> candidateRoutes) {
 
         List<Route> candidateRoutesClone = new ArrayList<Route>();
@@ -136,7 +160,6 @@ public class YEN extends RoutingAlgorithm{
 
         List<Route> routesOrder = new ArrayList<Route>();
 
-        int kValue = 1;
         LOOP_ROUTE : while ((routesOrder.size() < 1) && (candidateRoutesClone.size() > 0)){
             double minCost = Double.MAX_VALUE;
             int bestRouteIndex = 0;
@@ -149,9 +172,10 @@ public class YEN extends RoutingAlgorithm{
 
             Route route = candidateRoutesClone.get(bestRouteIndex);
 
+            //FIXME:
             // Avalia se a rota aceita o SNR, quando utilizada a camada física
-            // if (ParametersSimulation.getPhysicalLayerOption().equals(PhysicalLayerOption.Enabled)){
-            //     ModulationLevelType lessModulation = ParametersSimulation.getMudulationLevelType()[ParametersSimulation.getMudulationLevelType().length - 1];
+            // if (ParametersSimulatison.getPhysicalLayerOption().equals(PhysicalLayerOption.Enabled)){
+            //     ModulationLevelType lsessModulation = ParametersSimulation.getMudulationLevelType()[ParametersSimulation.getMudulationLevelType().length - 1];
     
             //     int biggestBitRate = ParametersSimulation.getTrafficOption()[ParametersSimulation.getTrafficOption().length - 1]; 
     
@@ -167,17 +191,22 @@ public class YEN extends RoutingAlgorithm{
             //     }
             // }
 
-            route.setKFindIndex(kValue);
-
             routesOrder.add(route);
             candidateRoutesClone.remove(bestRouteIndex);
-
-            kValue++;
         }
 
         return routesOrder.get(0);
     }
 
+    /**
+     * Cria uma nova rota contendo um fragmento da rota original. 
+     * 
+     * @param route Rota original
+     * @param ind1 ID inicial da nova rota
+     * @param ind2 ID final da nova rota
+     * @param topology Classe de topologia 
+     * @return A nova rota 
+     */
     private static Route createSubRoute(Route route, int ind1, int ind2, TopologyManager topology) {
         
         List<Integer> newPath = new ArrayList<Integer>();
@@ -187,10 +216,16 @@ public class YEN extends RoutingAlgorithm{
         }
         
         return new Route(newPath, topology);
-
     }
 
-
+    /**
+     * Cria uma nova rota com o começo do caminho da rota 1 e o continuando com a rota 2 
+     * 
+     * @param route1 Rota 1: Ínicio
+     * @param route2 Rota 2: Final
+     * @param topology Classe com a topologia da rede
+     * @return A nova rota com a juntão de ambas
+     */
     private static Route mergeRoute(Route route1, Route route2, TopologyManager topology) {
 
         List<Integer> newPath = route1.getPath();
@@ -202,7 +237,13 @@ public class YEN extends RoutingAlgorithm{
         return new Route(newPath, topology);
     }
 
-
+    /**
+     * Verifica se o caminho de ambas as rotas são idênticos, retorna true se forem iguais
+     * 
+     * @param path1 Caminho do uplink da primeira rota
+     * @param path2 Caminho do uplink da segunda rota
+     * @return True se os caminhos forem iguais e false se os caminhos forem diferentes
+     */
     private static boolean checkPathEquals(List<Integer> path1, List<Integer> path2){
         
         if (path1.size() != path2.size()){
@@ -217,5 +258,4 @@ public class YEN extends RoutingAlgorithm{
 
         return true;
     }
-
 }

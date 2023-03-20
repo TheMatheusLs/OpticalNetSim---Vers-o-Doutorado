@@ -11,13 +11,18 @@ public class GainAlgorithm {
      * Instância da classe.
      */
     private static final GainAlgorithm GAIN_INSTANCE = new GainAlgorithm(GainAlgorithmType.Basic);
-
+    /**
+     * Tipo de ganho selecionado
+     */
     private GainAlgorithmType metricType;
 
+    /**
+     * Construtor da Classe
+     * @param metricType
+     */
     public GainAlgorithm(GainAlgorithmType metricType) {
         this.metricType = metricType;
     }
-
 
     /**
      * Método para configurar o ganho dos amplificadores do optical link.
@@ -30,7 +35,6 @@ public class GainAlgorithm {
         }
     }
 
-    
     /**
      * Método para configurar o ganho dos amplificadores do optical link. As perdas do link são somadas e divididas pelo número de amplificadores, para então configurar o ganho de cada amplificador no optical link.
      * 
